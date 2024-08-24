@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.22)
 project(golv)
 
 if(CMAKE_COMPILER_IS_GNUCC)
-    add_compile_options(--fconcepts-diagnostics-depth=3)
+    add_compile_options(-fconcepts-diagnostics-depth=3)
 endif()
 
 add_compile_options(-Wall -Wextra -Wpedantic)
