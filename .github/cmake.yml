@@ -1,0 +1,27 @@
+name: CMake build
+on: [push, pull_request]
+jobs:
+  cmake-linux:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup
+      run: |
+        sudo apt update
+        sudo apt install -y libboost-dev ccache ninja-build
+    - name: Cache
+      uses: hendrikmuhs/ccache-action@v1.2
+      with:
+        key: cmake-linux-ci-build-${{ github.ref }}
+        restore-keys: |
+          cmake-linux-ci-build-${{ github.ref }}
+          cmake-linux-ci-build-refs/heads/master
+          cmake-linux-ci-build-
+    - name: Build
+      run: |
+        mkdir build
+        cmake -S . -B build
+        cmake --build build
+    - name: Test
+      run: |
+        ./build/bin/tests/unit/unit
