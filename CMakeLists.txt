@@ -3,10 +3,10 @@ cmake_minimum_required(VERSION 3.22)
 project(golv)
 
 if(CMAKE_COMPILER_IS_GNUCC)
-    add_compile_options(-fconcepts-diagnostics-depth=3)
+    add_compile_options(-fconcepts-diagnostics-depth=3 -Wextra)
 endif()
 
-add_compile_options(-Wall -Wextra -Wpedantic)
+add_compile_options(-Wall -Wpedantic)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
