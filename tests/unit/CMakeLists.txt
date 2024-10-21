@@ -21,6 +21,7 @@ add_executable(
   algorithm/_alphabeta.cpp
   algorithm/_negamax.cpp
   algorithm/_mtd_f.cpp
+  algorithm/_cfr.cpp
   util/_cyclic_number.cpp
 )
 
