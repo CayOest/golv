@@ -1,7 +1,7 @@
 #pragma once
 
 #include <algorithm>
-#include <golv/state/game.hpp>
+#include <golv/traits/game.hpp>
 #include <iostream>
 #include <limits>
 #include <type_traits>

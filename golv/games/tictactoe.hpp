@@ -8,7 +8,7 @@ namespace golv {
 /**
  *   tictactoe represents a simple tic tac toe game with 9 fields and 2 players.
  *   This game is completely solvable for a tie.
- *   It suffices the concept Game as described in golv/state/game.hpp.
+ *   It suffices the concept Game as described in golv/traits/game.hpp.
  **/
 class tictactoe
 {

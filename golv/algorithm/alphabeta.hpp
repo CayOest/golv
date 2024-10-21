@@ -1,11 +1,10 @@
 #pragma once
 
+#include <algorithm>
 #include <golv/algorithm/move_ordering.hpp>
 #include <golv/algorithm/transposition_table.hpp>
-#include <golv/state/game.hpp>
+#include <golv/traits/game.hpp>
 #include <golv/util/logging.hpp>
-
-#include <algorithm>
 #include <iostream>
 #include <limits>
 #include <type_traits>

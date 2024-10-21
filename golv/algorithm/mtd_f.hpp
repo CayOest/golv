@@ -1,14 +1,14 @@
 #pragma once
 
-#include "transposition_table.hpp"
-#include <golv/algorithm/alphabeta.hpp>
-#include <golv/state/game.hpp>
-
 #include <algorithm>
+#include <golv/algorithm/alphabeta.hpp>
+#include <golv/traits/game.hpp>
 #include <iostream>
 #include <limits>
 #include <type_traits>
 #include <unordered_map>
+
+#include "transposition_table.hpp"
 
 namespace golv {
 

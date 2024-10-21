@@ -17,6 +17,7 @@ add_executable(
   games/_tictactoe.cpp
   games/_connectfour.cpp
   games/_bridge.cpp
+  games/_rps.cpp
   algorithm/_alphabeta.cpp
   algorithm/_negamax.cpp
   algorithm/_mtd_f.cpp
