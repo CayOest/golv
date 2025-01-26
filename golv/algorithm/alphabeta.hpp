@@ -93,17 +93,17 @@ class alpha_beta
             }
             if (a >= b) {
                 if (game_.is_max()) {
-                    // _save_value(lookup_value_type::lower_bound, value);
-                    return a;
+                  // _save_value(lookup_value_type::lower_bound, value);
+                  return a;
                 } else {
-                    // _save_value(lookup_value_type::upper_bound, value);
-                    return b;
+                  // _save_value(lookup_value_type::upper_bound, value);
+                  return b;
                 }
             }
         }
 
         if (opt > old_a && opt < old_b) {
-            _save_value(lookup_value_type::exact, opt);
+          _save_value(lookup_value_type::exact, opt);
         }
 
         return game_.is_max() ? a : b;
@@ -112,8 +112,9 @@ class alpha_beta
     void _save_value(lookup_value_type type, value_type value)
     {
         if constexpr (with_table<table_type>::value) {
-            if (table_.is_memorable(game_))
-                table_.set(game_.state(), type, value);
+          if (table_.is_memorable(game_)) {
+            table_.set(game_.state(), type, value);
+          }
         }
     }
 

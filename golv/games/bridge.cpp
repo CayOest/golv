@@ -68,6 +68,12 @@ bridge::state_type
 bridge::state() const
 {
     std::stringstream ss;
+    if (!tricks_.empty() && !tricks_.back().cards_.empty()) {
+      for (auto const& card : tricks_.back().cards_) {
+        ss << card;
+      }
+    }
+    ss << " --- ";
     for (auto const& cards : state_) {
         for (auto const& card : cards) {
             ss << card;

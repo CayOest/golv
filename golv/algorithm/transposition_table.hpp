@@ -102,10 +102,18 @@ struct unordered_table
 
     void print() const
     {
-        std::cout << "Unordered Map = " << std::endl;
-        for (auto const& [key, value] : map_) {
-            std::cout << key << " = " << static_cast<int>(value.first) << ", " << value.second << std::endl;
-        }
+      std::cout << "Unordered Map = " << map_.size() << std::endl;
+      std::vector<std::pair<typename GameT::state_type, storage_type>> vec;
+      for (auto const& [key, value] : map_) {
+        vec.push_back({key, value});
+      }
+      std::sort(vec.begin(), vec.end(), [](auto const& a, auto const& b) {
+        if (a.first.size() != b.first.size()) return a.first.size() > b.first.size();
+        return a.first < b.first;
+      });
+      for (auto const& [key, value] : vec) {
+        std::cout << key << " = " << static_cast<int>(value.first) << ", " << value.second << std::endl;
+      }
     }
 };
 
