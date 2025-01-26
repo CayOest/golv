@@ -41,7 +41,7 @@ class rock_paper_scissors {
     void apply_action(move_type move) {
       auto _legal_actions = legal_actions();
 
-      auto it = std::find(_legal_actions.begin(), _legal_actions.end(), move);
+      auto it = std::find(std::begin(_legal_actions), std::end(_legal_actions), move);
       if (it == _legal_actions.end()) {
         throw std::domain_error("Wrong move: " + std::to_string(move));
       }
