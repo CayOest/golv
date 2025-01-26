@@ -79,37 +79,46 @@ class cfr {
         return 0.0;
       }
       if (game_.is_max()) {  // traversing player -> iterate over all actions
-        auto util = strategy_type(3, 0.0);
-        auto node_util = 0.0;
-        auto info_set = game_.state();
-        auto strat = map_[info_set].strategy();
-
-        for (int i = 0; i < 3; ++i) {
-          auto action = game_.legal_actions()[i];
-          game_.apply_action(action);
-          util[i] += _solve(depth + 1);
-          game_.undo_action(action);
-          node_util += strat[i] * util[i];
-        }
-
-        for (int i = 0; i < 3; ++i) {
-          auto action = game_.legal_actions()[i];
-          value_type regret = util[i] - node_util;
-          map_[info_set].regret_sum[i] += regret;
-        }
+        return _traverse_max(depth);
 
       } else {  // non-traversing player -> choose action at random according to the strategy
-        auto strat = map_[game_.state()].strategy();
-        auto action = _choose_action();
-        game_.apply_action(action);
-        auto util = _solve();
-        game_.undo_action(action);
-        for (int i = 0; i < 3; ++i) {
-          map_[game_.state()].strategy_sum[i] += strat[i];
-        }
-        return util;
+        return _traverse_non_max(depth);
       }
       return 0.0;
+    }
+
+    auto _traverse_non_max(int depth) -> value_type {
+      auto strat = map_[game_.state()].strategy();
+      auto action = _choose_action();
+      game_.apply_action(action);
+      auto util = _solve();
+      game_.undo_action(action);
+      for (int i = 0; i < 3; ++i) {
+        map_[game_.state()].strategy_sum[i] += strat[i];
+      }
+      return util;
+    }
+
+    auto _traverse_max(int depth) -> value_type {
+      strategy_type util(3, 0.0);
+      double node_util = 0.0;
+      auto info_set = game_.state();
+      auto strat = map_[info_set].strategy();
+
+      for (size_t i = 0; i < 3; ++i) {
+        auto action = game_.legal_actions()[i];
+        game_.apply_action(action);
+        util[i] = _solve(depth + 1);
+        game_.undo_action(action);
+        node_util += strat[i] * util[i];
+      }
+
+      for (size_t i = 0; i < 3; ++i) {
+        double regret = util[i] - node_util;
+        map_[info_set].regret_sum[i] += regret;
+      }
+
+      return node_util;
     }
 
     game_type game_;

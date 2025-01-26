@@ -15,6 +15,9 @@ TEST(cfr, rps) {
   cfr solver(game);
   auto val = solver.solve();
   GOLV_LOG_INFO("val = " << val);
+  // value should be -1
+  EXPECT_NEAR(val, -1.0, 0.01);
+
   auto const& map = solver.map();
 
   // Initial state strategy output
