@@ -35,6 +35,9 @@ class rock_paper_scissors {
 
     constexpr bool is_chance_node() const { return false; }
 
+    // empty
+    constexpr void handle_chance_node() const {}
+
     void apply_action(move_type move) {
       static const move_range _legal_actions = legal_actions();
 

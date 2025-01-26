@@ -17,9 +17,16 @@ class cfr {
     constexpr static double threshold = 1e-6;
 
     struct node {
-      size_t N = 3;
-      strategy_type regret_sum = std::vector<double>(N, 0.0);
-      strategy_type strategy_sum = std::vector<double>(N, 0.0);
+      game_type::move_range actions;
+      strategy_type regret_sum;
+      strategy_type strategy_sum;
+
+      node(game_type::move_range const& _actions) : actions(_actions) {
+        regret_sum = std::vector<double>(actions.size(), 0.0);
+        strategy_sum = std::vector<double>(actions.size(), 0.0);
+      }
+
+      size_t size() const { return actions.size(); }
 
       strategy_type strategy() const {
         auto strat = regret_sum;
@@ -42,7 +49,7 @@ class cfr {
           return _default_strategy();
       }
 
-      strategy_type _default_strategy() const { return std::vector<double>(N, 1.0 / N); }
+      strategy_type _default_strategy() const { return std::vector<double>(size(), 1.0 / size()); }
     };
 
     using map_type = std::map<information_set_type, node>;
@@ -57,6 +64,8 @@ class cfr {
       for (int i = 0; i < iterations; ++i) {
         GOLV_LOG_TRACE("Iteration = " << i);
         for (int j = 0; j < num_players; ++j) {
+          GOLV_LOG_TRACE("Player = " << j);
+          game_ = game_type();
           game_.set_max(j);
           util[j] += _solve();
         }
@@ -72,11 +81,10 @@ class cfr {
 
    private:
     auto _solve(int depth = 0) -> value_type {
-      GOLV_LOG_INFO(depth);
+      GOLV_LOG_INFO("depth = " << depth);
       if (game_.is_terminal()) return game_.value();
       if (game_.is_chance_node()) {
-        // do stuff
-        return 0.0;
+        return _handle_chance_node(depth);
       }
       if (game_.is_max()) {  // traversing player -> iterate over all actions
         return _traverse_max(depth);
@@ -87,35 +95,55 @@ class cfr {
       return 0.0;
     }
 
+    auto _handle_chance_node(int depth) -> value_type {
+      GOLV_LOG_TRACE("_handle_chance_node");
+      game_.handle_chance_node();
+      return _solve(depth + 1);
+    }
+
+    auto _get_node() {
+      auto info_set = game_.state();
+      auto it = map_.find(info_set);
+      auto legal = game_.legal_actions();
+      if (it == map_.end()) {
+        it = map_.insert({info_set, node(legal)}).first;
+      }
+      return it;
+    }
+
     auto _traverse_non_max(int depth) -> value_type {
-      auto strat = map_[game_.state()].strategy();
-      auto action = _choose_action();
+      GOLV_LOG_TRACE("_traverse_non_max");
+      auto it = _get_node();
+      auto strat = it->second.strategy();
+      auto action = _choose_action();  // choose action at random
       game_.apply_action(action);
-      auto util = _solve();
+      auto util = _solve(depth + 1);
       game_.undo_action(action);
-      for (int i = 0; i < 3; ++i) {
-        map_[game_.state()].strategy_sum[i] += strat[i];
+      for (size_t i = 0; i < it->second.size(); ++i) {
+        it->second.strategy_sum[i] += strat[i];
       }
       return util;
     }
 
     auto _traverse_max(int depth) -> value_type {
-      strategy_type util(3, 0.0);
+      GOLV_LOG_TRACE("_traverse_max");
+      auto legal = game_.legal_actions();
+      strategy_type util(legal.size(), 0.0);
       double node_util = 0.0;
-      auto info_set = game_.state();
-      auto strat = map_[info_set].strategy();
+      auto it = _get_node();
 
-      for (size_t i = 0; i < 3; ++i) {
-        auto action = game_.legal_actions()[i];
+      auto strat = it->second.strategy();
+      for (size_t i = 0; i < legal.size(); ++i) {
+        auto action = legal[i];
         game_.apply_action(action);
         util[i] = _solve(depth + 1);
         game_.undo_action(action);
         node_util += strat[i] * util[i];
       }
 
-      for (size_t i = 0; i < 3; ++i) {
+      for (size_t i = 0; i < it->second.size(); ++i) {
         double regret = util[i] - node_util;
-        map_[info_set].regret_sum[i] += regret;
+        it->second.regret_sum[i] += regret;
       }
 
       return node_util;
@@ -149,15 +177,12 @@ class cfr {
     auto _choose_action() -> move_type {
       GOLV_LOG_TRACE("_choose_action");
       if (!game_.is_max()) {
+        auto it = _get_node();
         information_set_type info_set = game_.state();
         GOLV_LOG_TRACE("info_set = " << info_set);
-        auto it = map_.find(info_set);
-        if (it == map_.end()) {
-          map_[info_set] = node();
-        }
-        auto const& strat = map_[info_set].strategy();
-        auto acc = _accumulated_strat(strat);
         auto const& legal = game_.legal_actions();
+        auto const& strat = it->second.strategy();
+        auto acc = _accumulated_strat(strat);
         auto choice = _rnd();
         GOLV_LOG_TRACE("choice = " << choice);
         auto it2 = std::find_if(std::begin(acc), std::end(acc), [choice](auto s) { return choice < s; });
