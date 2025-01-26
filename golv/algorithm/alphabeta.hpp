@@ -93,10 +93,10 @@ class alpha_beta
             }
             if (a >= b) {
                 if (game_.is_max()) {
-                  // _save_value(lookup_value_type::lower_bound, value);
+                  _save_value(lookup_value_type::lower_bound, value);
                   return a;
                 } else {
-                  // _save_value(lookup_value_type::upper_bound, value);
+                  _save_value(lookup_value_type::upper_bound, value);
                   return b;
                 }
             }

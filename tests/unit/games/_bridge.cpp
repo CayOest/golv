@@ -83,7 +83,8 @@ TEST(bridge, apply_action)
     auto game = create_game();
     game.apply_action({ kind::ace, suit::spades });
     auto state = game.state();
-    ASSERT_TRUE(state[0] == 'K' && state[1] == 's');
+    ASSERT_EQ(state[0], 'A');
+    ASSERT_EQ(state[1], 's');
     ASSERT_EQ(game.current_player(), 1);
 }
 
@@ -93,7 +94,7 @@ TEST(bridge, apply_action_4)
     game.apply_action({ kind::ace, suit::spades });
     auto state = game.state();
     ASSERT_EQ(game.tricks().size(), 1);
-    ASSERT_TRUE(state[0] == 'K' && state[1] == 's');
+    ASSERT_TRUE(state[0] == 'A' && state[1] == 's');
     ASSERT_EQ(game.current_player(), 1);
     game.apply_action({ kind::ace, suit::hearts });
     ASSERT_EQ(game.current_player(), 2);

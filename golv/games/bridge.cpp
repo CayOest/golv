@@ -72,8 +72,8 @@ bridge::state() const
       for (auto const& card : tricks_.back().cards_) {
         ss << card;
       }
+      ss << " --- ";
     }
-    ss << " --- ";
     for (auto const& cards : state_) {
         for (auto const& card : cards) {
             ss << card;
