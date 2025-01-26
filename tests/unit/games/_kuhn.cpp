@@ -9,14 +9,14 @@ bool state_ends_with(kuhn const& game, const std::string& suffix) {
   return state.size() >= suffix.size() && state.compare(state.size() - suffix.size(), suffix.size(), suffix) == 0;
 }
 
-TEST(_kuhn, initial_state) {
+TEST(kuhn_, initial_state) {
   kuhn game;
   EXPECT_TRUE(game.is_chance_node());
   EXPECT_FALSE(game.is_terminal());
   EXPECT_EQ(game.legal_actions(), "xb");
 }
 
-TEST(_kuhn, handle_chance_node) {
+TEST(kuhn_, handle_chance_node) {
   kuhn game;
   game.handle_chance_node();
   EXPECT_FALSE(game.is_chance_node());
@@ -25,7 +25,7 @@ TEST(_kuhn, handle_chance_node) {
   EXPECT_TRUE(game.state().find("|") != std::string::npos);  // State should include "|"
 }
 
-TEST(_kuhn, deal) {
+TEST(kuhn_, deal) {
   kuhn game;
   game.deal(2, 1);
   EXPECT_FALSE(game.is_chance_node());
@@ -33,7 +33,7 @@ TEST(_kuhn, deal) {
   EXPECT_TRUE(game.state().find("|") != std::string::npos);  // State should include "|"
 }
 
-TEST(_kuhn, apply_action_check) {
+TEST(kuhn_, apply_action_check) {
   kuhn game;
   game.deal(2, 1);
   game.apply_action('x');
@@ -42,7 +42,7 @@ TEST(_kuhn, apply_action_check) {
   EXPECT_EQ(game.legal_actions(), "xb");
 }
 
-TEST(_kuhn, apply_action_bet) {
+TEST(kuhn_, apply_action_bet) {
   kuhn game;
   game.deal(1, 0);
   game.apply_action('b');
@@ -51,7 +51,7 @@ TEST(_kuhn, apply_action_bet) {
   EXPECT_EQ(game.legal_actions(), "fc");
 }
 
-TEST(_kuhn, terminal_state_xx) {
+TEST(kuhn_, terminal_state_xx) {
   kuhn game;
   game.deal(0, 1);
   game.apply_action('x');
@@ -61,7 +61,7 @@ TEST(_kuhn, terminal_state_xx) {
   EXPECT_NO_THROW(game.value());
 }
 
-TEST(_kuhn, terminal_state_bc) {
+TEST(kuhn_, terminal_state_bc) {
   kuhn game;
   game.deal(1, 2);
   game.apply_action('b');
@@ -71,7 +71,7 @@ TEST(_kuhn, terminal_state_bc) {
   EXPECT_NO_THROW(game.value());
 }
 
-TEST(_kuhn, terminal_state_bf) {
+TEST(kuhn_, terminal_state_bf) {
   kuhn game;
   game.deal(2, 0);
   game.apply_action('b');
@@ -82,7 +82,7 @@ TEST(_kuhn, terminal_state_bf) {
   EXPECT_EQ(game.value(), 1);  // Player 2 folded, Player 1 wins
 }
 
-TEST(_kuhn, undo_action) {
+TEST(kuhn_, undo_action) {
   kuhn game;
   game.deal(2, 1);
   game.apply_action('x');
@@ -91,13 +91,13 @@ TEST(_kuhn, undo_action) {
   EXPECT_EQ(game.current_player(), 0);
 }
 
-TEST(_kuhn, invalid_action) {
+TEST(kuhn_, invalid_action) {
   kuhn game;
   game.deal(0, 1);
   EXPECT_THROW(game.apply_action('z'), std::domain_error);
 }
 
-TEST(_kuhn, value_xx) {
+TEST(kuhn_, value_xx) {
   kuhn game;
   game.deal(2, 1);
   game.apply_action('x');
@@ -106,7 +106,7 @@ TEST(_kuhn, value_xx) {
   EXPECT_EQ(game.value(), 1);  // Player 1 wins with higher card
 }
 
-TEST(_kuhn, value_bc) {
+TEST(kuhn_, value_bc) {
   kuhn game;
   game.deal(0, 1);
   game.apply_action('b');
@@ -115,7 +115,7 @@ TEST(_kuhn, value_bc) {
   EXPECT_EQ(game.value(), -2);  // Player 2 wins with higher card
 }
 
-TEST(_kuhn, value_all) {
+TEST(kuhn_, value_all) {
   kuhn game;
   auto test_value_calculation = [&](int card1, int card2, const std::string& actions, int max_player,
                                     double expected_value) {
