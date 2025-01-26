@@ -6,6 +6,7 @@
 #include <golv/games/kuhn.hpp>
 #include <golv/games/rps.hpp>
 #include <golv/util/logging.hpp>
+#include <numeric>
 #include <random>
 
 using namespace golv;

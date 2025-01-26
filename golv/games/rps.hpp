@@ -42,8 +42,9 @@ class rock_paper_scissors {
       static const move_range _legal_actions = legal_actions();
 
       auto it = std::find(_legal_actions.begin(), _legal_actions.end(), move);
-      if (it == _legal_actions.end())
-        throw std::domain_error("Wrong move: " + move);
+      if (it == _legal_actions.end()) {
+        throw std::domain_error("Wrong move: " + std::to_string(move));
+      }
       state_ += move;
       curr_player_ = (curr_player_ + 1) % 2;
     }

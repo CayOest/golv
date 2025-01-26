@@ -187,6 +187,8 @@ class cfr {
         GOLV_LOG_TRACE("choice = " << choice);
         auto it2 = std::find_if(std::begin(acc), std::end(acc), [choice](auto s) { return choice < s; });
         return *(std::begin(legal) + std::distance(std::begin(acc), it2));
+      } else {
+        throw std::domain_error("Error: Can only choose action for non-max player.");
       }
       GOLV_LOG_TRACE("/_choose_action");
     }
