@@ -2,6 +2,7 @@
 
 #include <golv/traits/game.hpp>
 #include <golv/util/logging.hpp>
+#include <numeric>
 #include <random>
 
 namespace golv {

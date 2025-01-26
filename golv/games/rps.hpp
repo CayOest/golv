@@ -39,7 +39,7 @@ class rock_paper_scissors {
     constexpr void handle_chance_node() const {}
 
     void apply_action(move_type move) {
-      static const move_range _legal_actions = legal_actions();
+      auto _legal_actions = legal_actions();
 
       auto it = std::find(_legal_actions.begin(), _legal_actions.end(), move);
       if (it == _legal_actions.end()) {
