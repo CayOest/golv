@@ -1,5 +1,6 @@
 #pragma once
 
+#include <algorithm>
 #include <golv/util/logging.hpp>
 #include <random>
 #include <stdexcept>
