@@ -55,12 +55,12 @@ class cfr {
     auto solve(int iterations = 1000) -> value_type {
       strategy_type util(num_players, 0.0);
       for (int i = 0; i < iterations; ++i) {
-        GOLV_LOG_DEBUG("Iteration = " << i);
+        GOLV_LOG_TRACE("Iteration = " << i);
         for (int j = 0; j < num_players; ++j) {
           game_.set_max(j);
           util[j] += _solve();
         }
-        GOLV_LOG_DEBUG("/Iteration");
+        GOLV_LOG_TRACE("/Iteration");
       }
       for (int j = 0; j < num_players; ++j) {
         util[j] /= iterations;

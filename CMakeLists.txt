@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.22)
 
 project(golv)
 
+cmake_policy(SET CMP0135 NEW)
+
 if(LINUX)
     if(CMAKE_COMPILER_IS_GNUCXX)
         add_compile_options(-fconcepts-diagnostics-depth=3)
