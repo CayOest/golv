@@ -10,30 +10,32 @@
 #include <functional>
 #include <random>
 
-TEST(alphabeta, tictactoe_tie)
-{
-    golv::tictactoe game;
-    auto [solution, best_move] = alphabeta(game);
-    ASSERT_EQ(solution, 0);
+class _alphabeta : public ::testing::Test {
+ protected:
+  void SetUp() override { golv::set_log_level(golv::log_level::trace); }
+};
+
+TEST_F(_alphabeta, tictactoe_tie) {
+  golv::tictactoe game;
+  auto [solution, best_move] = alphabeta(game);
+  ASSERT_EQ(solution, 0);
 }
 
-TEST(alphabeta, tictactoe_win)
-{
-    golv::tictactoe game;
-    game.apply_action(4);
-    game.apply_action(1);
-    auto [solution, best_move] = alphabeta(game);
-    ASSERT_EQ(solution, 1);
+TEST_F(_alphabeta, tictactoe_win) {
+  golv::tictactoe game;
+  game.apply_action(4);
+  game.apply_action(1);
+  auto [solution, best_move] = alphabeta(game);
+  ASSERT_EQ(solution, 1);
 }
 
-TEST(alphabeta, tictactoe_loss)
-{
-    golv::tictactoe game;
-    game.apply_action(1);
-    game.apply_action(4);
-    game.apply_action(7);
-    auto [solution, best_move] = alphabeta(game);
-    ASSERT_EQ(solution, -1);
+TEST_F(_alphabeta, tictactoe_loss) {
+  golv::tictactoe game;
+  game.apply_action(1);
+  game.apply_action(4);
+  game.apply_action(7);
+  auto [solution, best_move] = alphabeta(game);
+  ASSERT_EQ(solution, -1);
 }
 
 namespace {
@@ -49,31 +51,28 @@ auto ordering = [](golv::tictactoe::move_type left, golv::tictactoe::move_type r
 };
 }
 
-TEST(alphabeta, tictactoe_win_ordered)
-{
-    golv::tictactoe game;
-    game.apply_action(4);
-    game.apply_action(1);
-    auto [solution, best_move] = alphabeta(game, ordering);
-    ASSERT_EQ(solution, 1);
+TEST_F(_alphabeta, tictactoe_win_ordered) {
+  golv::tictactoe game;
+  game.apply_action(4);
+  game.apply_action(1);
+  auto [solution, best_move] = alphabeta(game, ordering);
+  ASSERT_EQ(solution, 1);
 }
 
-TEST(alphabeta, tictactoe_loss_ordered)
-{
-    golv::tictactoe game;
-    game.apply_action(1);
-    game.apply_action(4);
-    game.apply_action(7);
-    auto [solution, best_move] = alphabeta(game, ordering);
-    ASSERT_EQ(solution, -1);
+TEST_F(_alphabeta, tictactoe_loss_ordered) {
+  golv::tictactoe game;
+  game.apply_action(1);
+  game.apply_action(4);
+  game.apply_action(7);
+  auto [solution, best_move] = alphabeta(game, ordering);
+  ASSERT_EQ(solution, -1);
 }
 
-TEST(alphabeta, tictactoe_with_memory)
-{
-    golv::tictactoe game;
-    auto [solution, best_move] =
+TEST_F(_alphabeta, tictactoe_with_memory) {
+  golv::tictactoe game;
+  auto [solution, best_move] =
       golv::alphabeta(game, std::less<golv::tictactoe::move_type>{}, golv::unordered_table<golv::tictactoe>{});
-    ASSERT_EQ(solution, 0);
+  ASSERT_EQ(solution, 0);
 }
 
 namespace {
@@ -87,35 +86,31 @@ const std::vector<golv::connectfour::move_type> scenario1 = { 0, 0, 0, 0, 0, 0, 
 
 } // namespace
 
-TEST(alphabeta, connectfour_raw)
-{
-    golv::connectfour game;
-    const auto moves = scenario1;
-    std::for_each(std::begin(moves), std::end(moves), [&game](auto move) { game.apply_action(move); });
+TEST_F(_alphabeta, connectfour_raw) {
+  golv::connectfour game;
+  const auto moves = scenario1;
+  std::for_each(std::begin(moves), std::end(moves), [&game](auto move) { game.apply_action(move); });
 
-    auto [solution, best_move] = golv::alphabeta(game);
-    ASSERT_EQ(solution, +1);
+  auto [solution, best_move] = golv::alphabeta(game);
+  ASSERT_EQ(solution, +1);
 }
 
-TEST(alphabeta, connectfour_ordered)
-{
-    golv::connectfour game;
-    const auto moves = scenario1;
-    std::for_each(std::begin(moves), std::end(moves), [&game](auto move) { game.apply_action(move); });
+TEST_F(_alphabeta, connectfour_ordered) {
+  golv::connectfour game;
+  const auto moves = scenario1;
+  std::for_each(std::begin(moves), std::end(moves), [&game](auto move) { game.apply_action(move); });
 
-    auto [solution, best_move] = golv::alphabeta(game, connectfour_ordering);
-    ASSERT_EQ(solution, +1);
+  auto [solution, best_move] = golv::alphabeta(game, connectfour_ordering);
+  ASSERT_EQ(solution, +1);
 }
 
-TEST(alphabeta, connectfour_ordered_lookup)
-{
-    golv::connectfour game;
-    const auto moves = scenario1;
-    std::for_each(std::begin(moves), std::end(moves), [&game](auto move) { game.apply_action(move); });
+TEST_F(_alphabeta, connectfour_ordered_lookup) {
+  golv::connectfour game;
+  const auto moves = scenario1;
+  std::for_each(std::begin(moves), std::end(moves), [&game](auto move) { game.apply_action(move); });
 
-    auto [solution, best_move] =
-      golv::alphabeta(game, connectfour_ordering, golv::unordered_table<golv::connectfour>{});
-    ASSERT_EQ(solution, +1);
+  auto [solution, best_move] = golv::alphabeta(game, connectfour_ordering, golv::unordered_table<golv::connectfour>{});
+  ASSERT_EQ(solution, +1);
 }
 
 namespace {
@@ -123,35 +118,31 @@ const std::vector<golv::connectfour::move_type> scenario2 = { 0, 0, 0, 0, 0, 0, 
                                                               1, 3, 2, 3, 3, 3, 3, 3, 5, 2, 5 };
 }
 
-TEST(alphabeta, connectfour_ordered_2)
-{
-    golv::connectfour game;
-    const auto moves = scenario2;
-    std::for_each(std::begin(moves), std::end(moves), [&game](auto move) { game.apply_action(move); });
+TEST_F(_alphabeta, connectfour_ordered_2) {
+  golv::connectfour game;
+  const auto moves = scenario2;
+  std::for_each(std::begin(moves), std::end(moves), [&game](auto move) { game.apply_action(move); });
 
-    auto [solution, best_move] = golv::alphabeta(game, connectfour_ordering);
-    ASSERT_EQ(solution, -1);
+  auto [solution, best_move] = golv::alphabeta(game, connectfour_ordering);
+  ASSERT_EQ(solution, -1);
 }
 
-TEST(alphabeta_with_memory, connectfour_ordered_lookup_2)
-{
-    golv::connectfour game;
-    const auto moves = scenario2;
-    std::for_each(std::begin(moves), std::end(moves), [&game](auto move) { game.apply_action(move); });
+TEST_F(_alphabeta, connectfour_ordered_lookup_2) {
+  golv::connectfour game;
+  const auto moves = scenario2;
+  std::for_each(std::begin(moves), std::end(moves), [&game](auto move) { game.apply_action(move); });
 
-    auto [solution, best_move] =
-      golv::alphabeta(game, connectfour_ordering, golv::unordered_table<golv::connectfour>{});
-    ASSERT_EQ(solution, -1);
+  auto [solution, best_move] = golv::alphabeta(game, connectfour_ordering, golv::unordered_table<golv::connectfour>{});
+  ASSERT_EQ(solution, -1);
 }
 
-TEST(alphabeta_with_memory, connectfour_unordered_lookup_2)
-{
-    golv::connectfour game;
-    const auto moves = scenario2;
-    std::for_each(std::begin(moves), std::end(moves), [&game](auto move) { game.apply_action(move); });
+TEST_F(_alphabeta, connectfour_unordered_lookup_2) {
+  golv::connectfour game;
+  const auto moves = scenario2;
+  std::for_each(std::begin(moves), std::end(moves), [&game](auto move) { game.apply_action(move); });
 
-    auto [solution, best_move] = golv::alphabeta_with_memory(game);
-    ASSERT_EQ(solution, -1);
+  auto [solution, best_move] = golv::alphabeta_with_memory(game);
+  ASSERT_EQ(solution, -1);
 }
 
 namespace {
@@ -178,150 +169,127 @@ create_random_game(size_t cards_per_suit = 13, int rotate = 0, unsigned seed = 9
 
 }
 
-TEST(alphabeta, bridge_3cps)
-{
-    auto game = create_random_game(3);
-    GOLV_LOG_TRACE("game = " << game.state());
+TEST_F(_alphabeta, bridge_3cps) {
+  auto game = create_random_game(3);
+  GOLV_LOG_TRACE("game = " << game.state());
 
-    auto [solution, best_move] = golv::alphabeta(game);
-    ASSERT_EQ(solution, 3);
+  auto [solution, best_move] = golv::alphabeta(game);
+  ASSERT_EQ(solution, 3);
 }
 
-TEST(alphabeta, bridge_5cps)
-{
-    auto game = create_random_game(5);
-    GOLV_LOG_DEBUG("game = " << game.state());
+TEST_F(_alphabeta, bridge_5cps) {
+  auto game = create_random_game(5);
+  GOLV_LOG_DEBUG("game = " << game.state());
 
-    auto [solution, best_move] = golv::alphabeta(game);
-    GOLV_LOG_DEBUG("solution = " << solution << ", best_move = " << best_move);
-    ASSERT_EQ(solution, 4);
+  auto [solution, best_move] = golv::alphabeta(game);
+  GOLV_LOG_DEBUG("solution = " << solution << ", best_move = " << best_move);
+  ASSERT_EQ(solution, 4);
 }
 
-TEST(alphabeta, bridge_5cps_rot1)
-{
-    auto game = create_random_game(5, 1);
-    GOLV_LOG_DEBUG("game = " << game.state());
+TEST_F(_alphabeta, bridge_5cps_rot1) {
+  auto game = create_random_game(5, 1);
+  GOLV_LOG_DEBUG("game = " << game.state());
 
-    auto [solution, best_move] = golv::alphabeta(game);
-    GOLV_LOG_DEBUG("solution = " << solution << ", best_move = " << best_move);
-    ASSERT_EQ(solution, 2);
+  auto [solution, best_move] = golv::alphabeta(game);
+  GOLV_LOG_DEBUG("solution = " << solution << ", best_move = " << best_move);
+  ASSERT_EQ(solution, 2);
 }
 
-TEST(alphabeta, bridge_5cps_1)
-{
-    auto game = create_random_game(5);
-    game.set_soloist(1);
+TEST_F(_alphabeta, bridge_5cps_1) {
+  auto game = create_random_game(5);
+  game.set_soloist(1);
 
-    GOLV_LOG_DEBUG("game = " << game.state());
+  GOLV_LOG_DEBUG("game = " << game.state());
 
-    auto [solution, best_move] = golv::alphabeta(game);
-    GOLV_LOG_DEBUG("solution = " << solution << ", best_move = " << best_move);
-    ASSERT_EQ(solution, 1);
+  auto [solution, best_move] = golv::alphabeta(game);
+  GOLV_LOG_DEBUG("solution = " << solution << ", best_move = " << best_move);
+  ASSERT_EQ(solution, 1);
 }
 
-TEST(alphabeta, bridge_5cps_2)
-{
-    auto game = create_random_game(5);
-    game.set_soloist(2);
+TEST_F(_alphabeta, bridge_5cps_2) {
+  auto game = create_random_game(5);
+  game.set_soloist(2);
 
-    GOLV_LOG_DEBUG("game = " << game.state());
+  GOLV_LOG_DEBUG("game = " << game.state());
 
-    auto [solution, best_move] = golv::alphabeta(game);
-    GOLV_LOG_DEBUG("solution = " << solution << ", best_move = " << best_move);
-    ASSERT_EQ(solution, 4);
+  auto [solution, best_move] = golv::alphabeta(game);
+  GOLV_LOG_DEBUG("solution = " << solution << ", best_move = " << best_move);
+  ASSERT_EQ(solution, 4);
 }
 
-TEST(alphabeta, bridge_5cps_3)
-{
-    auto game = create_random_game(5);
-    game.set_soloist(3);
+TEST_F(_alphabeta, bridge_5cps_3) {
+  auto game = create_random_game(5);
+  game.set_soloist(3);
 
-    GOLV_LOG_DEBUG("game = " << game.state());
+  GOLV_LOG_DEBUG("game = " << game.state());
 
-    auto [solution, best_move] = golv::alphabeta(game);
-    GOLV_LOG_DEBUG("solution = " << solution << ", best_move = " << best_move);
-    ASSERT_EQ(solution, 1);
+  auto [solution, best_move] = golv::alphabeta(game);
+  GOLV_LOG_DEBUG("solution = " << solution << ", best_move = " << best_move);
+  ASSERT_EQ(solution, 1);
 }
 
-TEST(alphabeta_with_memory, bridge_3cps)
-{
-    auto game = create_random_game(3);
-    GOLV_LOG_DEBUG("game = " << game.state());
+TEST_F(_alphabeta, bridge_3cps_with_memory) {
+  auto game = create_random_game(3);
+  GOLV_LOG_DEBUG("game = " << game.state());
 
-    auto [solution, best_move] = golv::alphabeta_with_memory(game);
-    GOLV_LOG_DEBUG("solution = " << solution << ", best_move = " << best_move);
-    ASSERT_EQ(solution, 3);
+  auto [solution, best_move] = golv::alphabeta_with_memory(game);
+  GOLV_LOG_DEBUG("solution = " << solution << ", best_move = " << best_move);
+  ASSERT_EQ(solution, 3);
 }
 
-TEST(alphabeta, bridge_4cps)
-{
-    auto game = create_random_game(4);
-    GOLV_LOG_DEBUG("game = " << game.state());
+TEST_F(_alphabeta, bridge_4cps_with_memory) {
+  auto game = create_random_game(4);
+  GOLV_LOG_DEBUG("game = " << game.state());
 
-    auto [solution, best_move] = golv::alphabeta_with_memory(game);
-    GOLV_LOG_DEBUG("solution = " << solution << ", best_move = " << best_move);
-    ASSERT_EQ(solution, 4);
+  auto [solution, best_move] = golv::alphabeta_with_memory(game);
+  GOLV_LOG_DEBUG("solution = " << solution << ", best_move = " << best_move);
+  ASSERT_EQ(solution, 4);
 }
 
-TEST(alphabeta_with_memory, bridge_4cps)
-{
-    auto game = create_random_game(4);
-    GOLV_LOG_DEBUG("game = " << game.state());
+TEST_F(_alphabeta, bridge_5cps_with_memory) {
+  auto game = create_random_game(5);
+  GOLV_LOG_DEBUG("game = " << game.state());
 
-    auto [solution, best_move] = golv::alphabeta_with_memory(game);
-    GOLV_LOG_DEBUG("solution = " << solution << ", best_move = " << best_move);
-    ASSERT_EQ(solution, 4);
+  auto [solution, best_move] = golv::alphabeta_with_memory(game);
+  GOLV_LOG_DEBUG("solution = " << solution << ", best_move = " << best_move);
+  ASSERT_EQ(solution, 4);
 }
 
-TEST(alphabeta_with_memory, bridge_5cps)
-{
-    auto game = create_random_game(5);
-    GOLV_LOG_DEBUG("game = " << game.state());
+TEST_F(_alphabeta, bridge_5cps_rot1_with_memory) {
+  auto game = create_random_game(5, 1);
+  GOLV_LOG_DEBUG("game = " << game.state());
 
-    auto [solution, best_move] = golv::alphabeta_with_memory(game);
-    GOLV_LOG_DEBUG("solution = " << solution << ", best_move = " << best_move);
-    ASSERT_EQ(solution, 4);
+  auto [solution, best_move] = golv::alphabeta_with_memory(game);
+  GOLV_LOG_DEBUG("solution = " << solution << ", best_move = " << best_move);
+  ASSERT_EQ(solution, 2);
 }
 
-TEST(alphabeta_with_memory, bridge_5cps_rot1)
-{
-    auto game = create_random_game(5, 1);
-    GOLV_LOG_DEBUG("game = " << game.state());
+TEST_F(_alphabeta, bridge_5cps_1_with_memory) {
+  auto game = create_random_game(5);
+  game.set_soloist(1);
+  GOLV_LOG_DEBUG("game = " << game.state());
 
-    auto [solution, best_move] = golv::alphabeta_with_memory(game);
-    GOLV_LOG_DEBUG("solution = " << solution << ", best_move = " << best_move);
-    ASSERT_EQ(solution, 2);
+  auto [solution, best_move] = golv::alphabeta_with_memory(game);
+  GOLV_LOG_DEBUG("solution = " << solution << ", best_move = " << best_move);
+  ASSERT_EQ(solution, 1);
 }
 
-TEST(alphabeta_with_memory, bridge_5cps_1)
-{
-    auto game = create_random_game(5);
-    game.set_soloist(1);
-    GOLV_LOG_DEBUG("game = " << game.state());
+TEST_F(_alphabeta, bridge_5cps_2_with_memory) {
+  auto game = create_random_game(5);
+  game.set_soloist(2);
+  GOLV_LOG_DEBUG("game = " << game.state());
 
-    auto [solution, best_move] = golv::alphabeta_with_memory(game);
-    GOLV_LOG_DEBUG("solution = " << solution << ", best_move = " << best_move);
-    ASSERT_EQ(solution, 1);
+  auto [solution, best_move] = golv::alphabeta_with_memory(game);
+  GOLV_LOG_DEBUG("solution = " << solution << ", best_move = " << best_move);
+  ASSERT_EQ(solution, 4);
 }
 
-TEST(alphabeta_with_memory, bridge_5cps_2)
-{
-    auto game = create_random_game(5);
-    game.set_soloist(2);
-    GOLV_LOG_DEBUG("game = " << game.state());
+TEST_F(_alphabeta, bridge_5cps_3_with_memory) {
+  auto game = create_random_game(5);
+  game.set_soloist(3);
+  GOLV_LOG_DEBUG("game = " << game.state());
 
-    auto [solution, best_move] = golv::alphabeta_with_memory(game);
-    GOLV_LOG_DEBUG("solution = " << solution << ", best_move = " << best_move);
-    ASSERT_EQ(solution, 4);
-}
-
-TEST(alphabeta_with_memory, bridge_5cps_3)
-{
-    auto game = create_random_game(5);
-    game.set_soloist(3);
-    GOLV_LOG_DEBUG("game = " << game.state());
-
-    auto [solution, best_move] = golv::alphabeta_with_memory(game);
-    GOLV_LOG_DEBUG("solution = " << solution << ", best_move = " << best_move);
-    ASSERT_EQ(solution, 1);
+  auto [solution, best_move] = golv::alphabeta_with_memory(game);
+  GOLV_LOG_DEBUG("solution = " << solution << ", best_move = " << best_move);
+  ASSERT_EQ(solution, 1);
 }

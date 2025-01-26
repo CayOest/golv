@@ -99,23 +99,26 @@ struct unordered_table
     {
         map_[state] = { type, value };
     }
-
-    void print() const
-    {
-      std::cout << "Unordered Map = " << map_.size() << std::endl;
-      std::vector<std::pair<typename GameT::state_type, storage_type>> vec;
-      for (auto const& [key, value] : map_) {
-        vec.push_back({key, value});
-      }
-      std::sort(vec.begin(), vec.end(), [](auto const& a, auto const& b) {
-        if (a.first.size() != b.first.size()) return a.first.size() > b.first.size();
-        return a.first < b.first;
-      });
-      for (auto const& [key, value] : vec) {
-        std::cout << key << " = " << static_cast<int>(value.first) << ", " << value.second << std::endl;
-      }
-    }
 };
+
+template <class GameT>
+std::ostream& operator<<(std::ostream& os, unordered_table<GameT> const& t) {
+  os << "Unordered Map = " << t.map_.size() << std::endl;
+  using storage_type = typename unordered_table<GameT>::storage_type;
+  using value_type = std::pair<typename GameT::state_type, storage_type>;
+  std::vector<value_type> vec;
+  for (auto const& [key, value] : t.map_) {
+    vec.push_back(std::make_pair(key, value));
+  }
+  std::sort(vec.begin(), vec.end(), [](auto const& a, auto const& b) {
+    if (a.first.size() != b.first.size()) return a.first.size() > b.first.size();
+    return a.first < b.first;
+  });
+  for (auto const& [key, value] : vec) {
+    os << key << " = " << static_cast<int>(value.first) << ", " << value.second << std::endl;
+  }
+  return os;
+}
 
 template<class GameT, TranspositionTable<GameT> TableT>
 auto

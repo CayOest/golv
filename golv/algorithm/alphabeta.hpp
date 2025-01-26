@@ -55,8 +55,7 @@ class alpha_beta
     auto _solve(value_type a, value_type b, int depth) -> value_type
     {
         if (game_.is_terminal()) {
-            return 0;
-            // return game_.value();
+          return 0;
         }
 
         value_type opt = game_.is_max() ? min_value : max_value;
@@ -79,15 +78,15 @@ class alpha_beta
             game_.undo_action(move);
 
             if (game_.is_max()) {
-                // if (depth == 0 && child_value > value) {
-                //     best_move_ = move;
-                // }
+              if (depth == 0 && value > opt) {
+                best_move_ = move;
+              }
                 opt = std::max(value, opt);
                 a = std::max(a, value);
             } else {
-                // if (depth == 0 && child_value < value) {
-                //     best_move_ = move;
-                // }
+              if (depth == 0 && value < opt) {
+                best_move_ = move;
+              }
                 opt = std::min(opt, value);
                 b = std::min(b, value);
             }
@@ -139,7 +138,7 @@ alphabeta_with_memory(GameT g, LessT o = std::less<typename GameT::move_type>{})
 {
     alpha_beta ab(g, o, unordered_table<GameT>{});
     auto solution = ab.solve();
-    ab.get_table().print();
+    GOLV_LOG_TRACE("Table = " << ab.get_table());
     return std::make_pair(solution, ab.best_move());
 }
 
