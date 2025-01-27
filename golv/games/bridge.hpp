@@ -48,21 +48,21 @@ class bridge
     player_type get_trick_winner() const;
 
   public:
-    virtual move_range legal_actions() const;
-    virtual value_type value() const;
-    virtual bool is_max() const;
+   virtual move_range legal_actions() const;
+   virtual value_type value() const;
+   virtual bool is_max() const;
 
-    void set_soloist(player_type soloist);
+   void set_soloist(player_type soloist);
 
-    player_type current_player() const;
-    void apply_action(move_type const& move);
-    void undo_action(move_type const& move);
+   player_type current_player() const;
+   void apply_action(move_type const& move);
+   void undo_action(move_type const& move);
 
-    bool is_terminal() const;
-    bool is_new_trick() const;
-    state_type state() const;
-    void deal(internal_state_type const& state);
-    const std::vector<trick>& tricks() const;
+   bool is_terminal() const;
+   bool is_new_trick() const;
+   state_type state() const;
+   void deal(internal_state_type const& state);
+   const std::vector<trick>& tricks() const;
 
   private:
     value_type value_{ 0 };

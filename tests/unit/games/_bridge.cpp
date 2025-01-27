@@ -20,9 +20,25 @@ TEST(bridge, create_deck)
   ASSERT_EQ(deck.size(), 13 * 4);
 }
 
-TEST(bridge, deal)
-{
-    create_game();
+TEST(bridge, card_order) {
+  bridge_card_order less{suit::spades};
+
+  // lead suit
+  card As = "As";
+  card Ks = "Ks";
+  ASSERT_TRUE(less(Ks, As));
+
+  // same suit != lead suit
+  card Ac = "Ac";
+  card Kc = "Kc";
+  ASSERT_TRUE(less(Kc, Ac));
+
+  // different suits != lead_suit
+  card Ah = "Ah";
+  ASSERT_TRUE(less(Ac, Ah));
+
+  // lead suit vs. non-lead suit
+  ASSERT_TRUE(less(Ac, Ks));
 }
 
 TEST(bridge, state)
@@ -67,30 +83,39 @@ TEST(bridge, legal_actions)
     GOLV_LOG_DEBUG("" << game.state());
     game.apply_action({ kind::king, suit::spades });
     GOLV_LOG_DEBUG(game.state());
+    ASSERT_EQ(game.value(), 0);
     auto moves2 = game.legal_actions();
     ASSERT_EQ(moves2.size(), 5);
     game.apply_action(moves2.front());
+    ASSERT_EQ(game.value(), 0);
     auto moves3 = game.legal_actions();
     ASSERT_EQ(moves3.size(), 4);
     game.apply_action(moves3.front());
+    ASSERT_EQ(game.value(), 0);
     auto moves4 = game.legal_actions();
     ASSERT_EQ(moves4.size(), 2);
     game.apply_action(moves4.front());
+    ASSERT_EQ(game.value(), 1);
     ASSERT_EQ(game.tricks().size(), 2);
-    ASSERT_EQ(game.current_player(), 1);
+    ASSERT_EQ(game.current_player(), 0);
     //------------------------------------
+    GOLV_LOG_DEBUG("" << game.state());
     auto moves5 = game.legal_actions();
     ASSERT_EQ(moves5.size(), 12);
     game.apply_action(moves5.back());
+    ASSERT_EQ(game.value(), 0);
     auto moves6 = game.legal_actions();
-    ASSERT_EQ(moves6.size(), 3);
+    ASSERT_EQ(moves6.size(), 4);
     game.apply_action(moves6.front());
+    ASSERT_EQ(game.value(), 0);
     auto moves7 = game.legal_actions();
-    ASSERT_EQ(moves7.size(), 4);
+    ASSERT_EQ(moves7.size(), 3);
     game.apply_action(moves7.back());
+    ASSERT_EQ(game.value(), 0);
     auto moves8 = game.legal_actions();
     ASSERT_EQ(moves8.size(), 1);
     game.apply_action(moves8.back());
+    ASSERT_EQ(game.value(), 1);
     ASSERT_EQ(game.tricks().size(), 3);
     ASSERT_EQ(game.current_player(), 2);
 }
@@ -121,22 +146,24 @@ TEST(bridge, undo_action)
 TEST(bridge, undo_action_after_trick)
 {
     auto game = create_random_game(13);
+    GOLV_LOG_DEBUG("" << game.state());
     std::vector<bridge::move_type> moves;
     for (int i = 0; i < 4; ++i) {
         moves.push_back(game.legal_actions().front());
         game.apply_action(moves.back());
     }
-    ASSERT_EQ(game.current_player(), 1);
+    ASSERT_EQ(game.current_player(), 0);
     game.undo_action(moves.back());
     ASSERT_EQ(game.current_player(), 3);
     game.apply_action(moves.back());
-    ASSERT_EQ(game.current_player(), 1);
+    ASSERT_EQ(game.current_player(), 0);
     ASSERT_EQ(game.tricks().size(), 2);
 }
 
 TEST(bridge, undo)
 {
     auto game = create_random_game(3);
+    GOLV_LOG_DEBUG("" << game.state());
     std::vector<bridge::move_type> moves;
     for (int i = 0; i < 3; ++i) {
         for (int i = 0; i < 4; ++i) {
@@ -156,6 +183,7 @@ TEST(bridge, undo)
     ASSERT_EQ(game.legal_actions().size(), 1);
     game.undo_action(moves.back());
     moves.pop_back();
+    GOLV_LOG_DEBUG("" << game.state());
     ASSERT_EQ(game.legal_actions().size(), 1);
     game.undo_action(moves.back());
     moves.pop_back();
@@ -168,13 +196,14 @@ TEST(bridge, undo)
     ASSERT_EQ(game.legal_actions().size(), 2);
     game.undo_action(moves.back());
     moves.pop_back();
+    GOLV_LOG_DEBUG("" << game.state());
     ASSERT_EQ(game.legal_actions().size(), 2);
     game.undo_action(moves.back());
     moves.pop_back();
-    ASSERT_EQ(game.legal_actions().size(), 3);
+    ASSERT_EQ(game.legal_actions().size(), 1);
     game.undo_action(moves.back());
     moves.pop_back();
-    ASSERT_EQ(game.legal_actions().size(), 2);
+    ASSERT_EQ(game.legal_actions().size(), 1);
     game.undo_action(moves.back());
     moves.pop_back();
     ASSERT_EQ(game.legal_actions().size(), 3);
