@@ -37,30 +37,30 @@ bool less_kind(kind left, kind right) {
 
 // todo: implement ordering for tens
 bool skat_card_order::operator()(card const& left, card const& right) const {
-  if (left.kind_ == kind::jack) {
-    if (right.kind_ == kind::jack) {
-      return less_suit(left.suit_, right.suit_);
+  if (left.get_kind() == kind::jack) {
+    if (right.get_kind() == kind::jack) {
+      return less_suit(left.get_suit(), right.get_suit());
     } else {
       return false;
     }
   }
-  if (right.kind_ == kind::jack) {
+  if (right.get_kind() == kind::jack) {
     return true;
   }
-  if (left.suit_ == lead_suit) {
-    if (right.suit_ == lead_suit) {
-      return less_kind(left.kind_, right.kind_);
+  if (left.get_suit() == lead_suit) {
+    if (right.get_suit() == lead_suit) {
+      return less_kind(left.get_kind(), right.get_kind());
     } else {
       return false;
     }
   } else {
-    if (right.suit_ == lead_suit) {
+    if (right.get_suit() == lead_suit) {
       return true;
     } else {
-      if (left.suit_ == right.suit_) {
-        return less_kind(left.kind_, right.kind_);
+      if (left.get_suit() == right.get_suit()) {
+        return less_kind(left.get_kind(), right.get_kind());
       } else {
-        return less_suit(left.suit_, right.suit_);
+        return less_suit(left.get_suit(), right.get_suit());
       }
     }
   }
@@ -72,7 +72,7 @@ skat::move_range skat::legal_actions() const {
   if (tricks_.empty() || tricks_.back().cards_.empty()) {
     legal = cards;
   } else {
-    auto cmp = [](card const& left, card const& right) { return less_suit(left.suit_, right.suit_); };
+    auto cmp = [](card const& left, card const& right) { return less_suit(left.get_suit(), right.get_suit()); };
     auto rng = std::equal_range(cards.begin(), cards.end(), tricks_.back().cards_.front(),
                                 // todo: fix this for jacks
                                 cmp);
@@ -90,7 +90,7 @@ skat::move_range skat::legal_actions() const {
 skat::player_type skat::get_trick_winner() const {
   assert(!tricks_.empty());
   auto last_trick = tricks_.back().cards_;
-  std::sort(std::begin(last_trick), std::end(last_trick), skat_card_order{last_trick.front().suit_});
+  std::sort(std::begin(last_trick), std::end(last_trick), skat_card_order{last_trick.front().get_suit()});
   GOLV_LOG_TRACE("Sorted trick: " << last_trick);
   auto it = std::find(std::begin(tricks_.back().cards_), std::end(tricks_.back().cards_), last_trick.back());
   assert(it != tricks_.back().cards_.end());
@@ -168,7 +168,7 @@ void skat::undo_action(skat::move_type const& move) {
 skat::value_type count_eyes(skat::trick const& trick) {
   skat::value_type eyes = 0;
   for (auto const& card : trick.cards_) {
-    switch (card.kind_) {
+    switch (card.get_kind()) {
       case kind::jack:
         eyes += 2;
         break;
@@ -183,6 +183,9 @@ skat::value_type count_eyes(skat::trick const& trick) {
         break;
       case kind::queen:
         eyes += 4;
+        break;
+      default:
+        break;
     }
   }
   return eyes;

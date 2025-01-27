@@ -331,6 +331,16 @@ void generate_best_move_sequence(golv::skat g) {
 }
 }  // namespace
 
+TEST_F(_alphabeta, skat_8cards) {
+  golv::skat game = create_random_skat_game(8, 2);
+  GOLV_LOG_DEBUG("game = " << game.state());
+  auto [solution, best_move] = golv::alphabeta(game);
+  ASSERT_EQ(solution, 29);
+  golv::card expected{golv::kind::ace, golv::suit::spades};
+  ASSERT_EQ(best_move, expected);
+  generate_best_move_sequence(game);
+}
+
 TEST_F(_alphabeta, skat_8cards_with_mem) {
   golv::skat game = create_random_skat_game(8, 2);
   GOLV_LOG_DEBUG("game = " << game.state());

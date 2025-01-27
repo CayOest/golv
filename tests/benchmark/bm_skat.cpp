@@ -11,29 +11,29 @@ using namespace golv;
 
 auto test_alphabeta(skat const& g) {
   Timer t;
-  auto sol = golv::alphabeta(g);
+  golv::alphabeta(g);
   auto duration = t.stop();
   return duration;
 }
 
 auto test_alphabeta_with_memory(skat const& g) {
   Timer t;
-  auto sol = golv::alphabeta_with_memory(g);
+  golv::alphabeta_with_memory(g);
   auto duration = t.stop();
   return duration;
 }
 
 auto test_mtd_f(skat const& g) {
   Timer t;
-  auto sol = golv::mtd_f(g).solve(5, 0, 13);
+  golv::mtd_f(g).solve(5, 0, 13);
   auto duration = t.stop();
   return duration;
 }
 
 int main() {
-  int max_n = 10;
-  golv::set_log_level(golv::log_level::debug);
-  for (int n = 3; n < 8; ++n) {
+  int max_n = 5;
+  golv::set_log_level(golv::log_level::error);
+  for (int n = 3; n <= std::min(7, max_n); ++n) {
     auto game = create_random_skat_game(n, 2);
     auto dur_ab = test_alphabeta(game) / 1000.0;
     auto dur_mem = test_alphabeta_with_memory(game) / 1000.0;

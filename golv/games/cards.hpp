@@ -1,5 +1,7 @@
 #pragma once
 
+#include <array>
+#include <cstdint>
 #include <ostream>
 #include <vector>
 
@@ -30,26 +32,47 @@ enum class kind
     deuce
 };
 
-struct card
-{
-    kind kind_;
-    suit suit_;
+class card {
+ private:
+  kind kind_;
+  suit suit_;
+  uint64_t code_ = 0;
+
+ public:
+  card(const char* c);
+  card(kind k, suit s);
+  card() = default;
+  kind get_kind() const { return kind_; }
+  suit get_suit() const { return suit_; }
+  uint64_t code() const { return code_; }
 };
 
-bool
-operator==(golv::card const& left, golv::card const& right);
+std::string to_string(const card& c);
+bool operator==(const card& left, const card& right);
+std::ostream& operator<<(std::ostream& os, const card& c);
 
-bool
-operator<(golv::card const& left, golv::card const& right);
+/**
+ * hand
+ */
+using hand = std::vector<card>;
+using hand_range = std::pair<hand::const_iterator, hand::const_iterator>;
+std::ostream& operator<<(std::ostream& os, const hand& h);
+std::string to_string(const hand& h);
 
-using deck = std::vector<card>;
-
-deck
-create_deck(size_t cards_per_suit);
-
-std::ostream&
-operator<<(std::ostream& os, card const& c);
-
-std::ostream&
-operator<<(std::ostream& os, deck const& deck);
+template <size_t cards_per_suit>
+hand create_deck() {
+  hand deck;
+  for (size_t s = 0; s < 4; ++s) {
+    for (size_t k = 0; k < cards_per_suit; ++k) {
+      deck.push_back(card{static_cast<kind>(k), static_cast<suit>(s)});
+    }
+  }
+  return deck;
 }
+
+bool operator<(const card& left, const card& right);
+
+hand create_bridge_deck();
+hand create_skat_deck();
+
+}  // namespace golv

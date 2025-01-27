@@ -8,11 +8,10 @@
 
 namespace golv {
 
-struct card_order
-{
-    suit lead_suit;
+struct bridge_card_order {
+  suit lead_suit = suit::spades;
 
-    bool operator()(card const& left, card const& right) const;
+  bool operator()(card const& left, card const& right) const;
 };
 
 /**

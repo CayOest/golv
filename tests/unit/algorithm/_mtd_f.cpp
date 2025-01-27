@@ -151,6 +151,6 @@ TEST_F(_mtd_f, bridge_5cps_3_with_memory) {
 TEST_F(_mtd_f, skat_9cards_with_mem) {
   golv::skat game = create_random_skat_game(9, 2);
   GOLV_LOG_DEBUG("game = " << game.state());
-  auto solution = golv::mtd_f(game).solve(0);
+  auto solution = golv::mtd_f(game).solve(60, 0, 120);
   ASSERT_EQ(solution, 5);
 }

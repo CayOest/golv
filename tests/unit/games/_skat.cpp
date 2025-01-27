@@ -7,32 +7,6 @@
 
 using namespace golv;
 
-namespace {
-skat create_skat_game() {
-  skat game;
-  constexpr size_t cards_per_suit = 8;
-  constexpr size_t cards_per_player = 10;
-  std::array<deck, skat::num_players + 1> cards;
-
-  deck _deck = create_deck(cards_per_suit);
-  for (size_t i = 0; i < skat::num_players; ++i) {
-    std::copy(_deck.begin() + (i * cards_per_player), _deck.begin() + (i + 1) * cards_per_player,
-              std::back_inserter(cards[i]));
-    std::sort(cards[i].begin(), cards[i].end(), skat_card_order{});
-  }
-  auto N = skat::num_players * cards_per_player;
-  cards[3] = deck(_deck.begin() + N, _deck.begin() + (N + 2));
-  game.deal(cards);
-  return game;
-}
-
-}  // namespace
-
-TEST(skat, create) {
-  skat game = create_skat_game();
-  GOLV_LOG_INFO("" << game.state());
-}
-
 TEST(skat, create_random) {
   skat game = create_random_skat_game(10);
   GOLV_LOG_INFO("" << game.state());

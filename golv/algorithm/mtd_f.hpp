@@ -45,6 +45,7 @@ public:
       else
         lower_bound = g;
       GOLV_LOG_DEBUG("table size = " << solver.get_table().size());
+      GOLV_LOG_TRACE("table = " << solver.get_table());
     }
 
     return g;

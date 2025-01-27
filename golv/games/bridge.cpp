@@ -8,22 +8,20 @@
 
 namespace golv {
 
-bool
-card_order::operator()(card const& left, card const& right) const
-{
-    if (left.suit_ == lead_suit) {
-        if (right.suit_ == lead_suit) {
-            return static_cast<int>(left.kind_) < static_cast<int>(right.kind_);
-        } else {
-            return true;
-        }
+bool bridge_card_order::operator()(card const& left, card const& right) const {
+  if (left.get_suit() == lead_suit) {
+    if (right.get_suit() == lead_suit) {
+      return static_cast<int>(left.get_kind()) < static_cast<int>(right.get_kind());
     } else {
-        if (right.suit_ == lead_suit) {
-            return false;
-        } else {
-            return static_cast<int>(left.suit_) < static_cast<int>(right.suit_);
-        }
+      return true;
     }
+  } else {
+    if (right.get_suit() == lead_suit) {
+      return false;
+    } else {
+      return static_cast<int>(left.get_suit()) < static_cast<int>(right.get_suit());
+    }
+  }
 }
 
 bridge::move_range
@@ -34,16 +32,16 @@ bridge::legal_actions() const
     if (tricks_.empty() || tricks_.back().cards_.empty()) {
         legal = cards;
     } else {
-        auto rng = std::equal_range(
-          cards.begin(), cards.end(), tricks_.back().cards_.front(), [](card const& left, card const& right) {
-              return static_cast<int>(left.suit_) < static_cast<int>(right.suit_);
-          });
+      auto rng = std::equal_range(cards.begin(), cards.end(), tricks_.back().cards_.front(),
+                                  [](card const& left, card const& right) {
+                                    return static_cast<int>(left.get_suit()) < static_cast<int>(right.get_suit());
+                                  });
 
-        if (rng.first != rng.second) {
-            legal = move_range(rng.first, rng.second);
-        } else {
-            legal = cards;
-        }
+      if (rng.first != rng.second) {
+        legal = move_range(rng.first, rng.second);
+      } else {
+        legal = cards;
+      }
     }
     GOLV_LOG_TRACE("legal_actions for player " << *current_player_ << ": " << legal);
     return legal;
@@ -54,7 +52,7 @@ bridge::get_trick_winner() const
 {
     assert(!tricks_.empty());
     auto last_trick = tricks_.back().cards_;
-    std::sort(std::begin(last_trick), std::end(last_trick), card_order{ last_trick.front().suit_ });
+    std::sort(std::begin(last_trick), std::end(last_trick), bridge_card_order{last_trick.front().get_suit()});
     GOLV_LOG_TRACE("Sorted trick: " << last_trick);
     auto it = std::find(std::begin(tricks_.back().cards_), std::end(tricks_.back().cards_), last_trick.front());
     assert(it != tricks_.back().cards_.end());
@@ -113,7 +111,7 @@ bridge::undo_action(bridge::move_type const& move)
         GOLV_LOG_TRACE("undo_action for player " << *current_player_ << ": " << move);
         auto& cards = state_[*current_player_];
         cards.push_back(move);
-        std::sort(cards.begin(), cards.end());
+        std::sort(cards.begin(), cards.end(), bridge_card_order{tricks_.back().cards_.front().get_suit()});
         tricks_.back().cards_.pop_back();
     } else {
         tricks_.pop_back();
@@ -122,7 +120,8 @@ bridge::undo_action(bridge::move_type const& move)
         --current_player_;
         GOLV_LOG_TRACE("undo_action for player " << *current_player_ << ": " << move);
         state_[*current_player_].push_back(move);
-        std::sort(state_[*current_player_].begin(), state_[*current_player_].end());
+        std::sort(state_[*current_player_].begin(), state_[*current_player_].end(),
+                  bridge_card_order{tricks_.back().cards_.front().get_suit()});
     }
 }
 

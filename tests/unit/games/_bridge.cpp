@@ -12,19 +12,12 @@ using namespace golv;
 
 TEST(bridge, create_deck)
 {
-    size_t cards_per_suit = 5;
-    auto deck = create_deck(cards_per_suit);
-    ASSERT_EQ(deck.size(), cards_per_suit * 4);
+  constexpr size_t cards_per_suit = 5;
+  auto deck = create_deck<cards_per_suit>();
+  ASSERT_EQ(deck.size(), cards_per_suit * 4);
 
-    cards_per_suit = 13;
-    deck = create_deck(cards_per_suit);
-    ASSERT_EQ(deck.size(), cards_per_suit * 4);
-}
-
-TEST(bridge, create_deck_invalid)
-{
-    constexpr size_t cards_per_suit = 20;
-    ASSERT_THROW(create_deck(cards_per_suit), golv::exception);
+  deck = create_deck<13>();
+  ASSERT_EQ(deck.size(), 13 * 4);
 }
 
 TEST(bridge, deal)

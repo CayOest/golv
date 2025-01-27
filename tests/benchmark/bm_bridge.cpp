@@ -13,21 +13,21 @@ namespace {
 
 auto test_alphabeta(bridge const& g) {
   Timer t;
-  auto sol = golv::alphabeta(g);
+  golv::alphabeta(g);
   auto duration = t.stop();
   return duration;
 }
 
 auto test_alphabeta_with_memory(bridge const& g) {
   Timer t;
-  auto sol = golv::alphabeta_with_memory(g);
+  golv::alphabeta_with_memory(g);
   auto duration = t.stop();
   return duration;
 }
 
 auto test_mtd_f(bridge const& g) {
   Timer t;
-  auto sol = golv::mtd_f(g).solve(5, 0, 13);
+  golv::mtd_f(g).solve(5, 0, 13);
   auto duration = t.stop();
   return duration;
 }
