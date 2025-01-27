@@ -185,7 +185,7 @@ TEST_F(_alphabeta, bridge_5cps_rot1) {
 
   auto [solution, best_move] = golv::alphabeta(game);
   GOLV_LOG_DEBUG("solution = " << solution << ", best_move = " << best_move);
-  // ASSERT_EQ(solution, 2);
+  ASSERT_EQ(solution, 5);
   generate_best_move_sequence(game, 4);
 }
 
