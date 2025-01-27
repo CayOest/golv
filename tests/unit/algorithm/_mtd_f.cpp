@@ -147,3 +147,10 @@ TEST_F(_mtd_f, bridge_5cps_3_with_memory) {
   GOLV_LOG_DEBUG("solution = " << solution);
   ASSERT_EQ(solution, 1);
 }
+
+TEST_F(_mtd_f, skat_9cards_with_mem) {
+  golv::skat game = create_random_skat_game(9, 2);
+  GOLV_LOG_DEBUG("game = " << game.state());
+  auto solution = golv::mtd_f(game).solve(0);
+  ASSERT_EQ(solution, 5);
+}

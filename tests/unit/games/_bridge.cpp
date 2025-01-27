@@ -1,10 +1,10 @@
 #include <gtest/gtest.h>
 
+#include <algorithm>
 #include <golv/games/bridge.hpp>
 #include <golv/games/exception.hpp>
 #include <golv/util/logging.hpp>
-
-#include <algorithm>
+#include <golv/util/test_utils.hpp>
 #include <iterator>
 #include <random>
 
@@ -25,43 +25,6 @@ TEST(bridge, create_deck_invalid)
 {
     constexpr size_t cards_per_suit = 20;
     ASSERT_THROW(create_deck(cards_per_suit), golv::exception);
-}
-
-namespace {
-bridge
-create_game()
-{
-    bridge game;
-    constexpr size_t cards_per_suit = 13;
-    std::array<deck, 4> cards;
-    deck _deck = create_deck(13);
-    for (int i = 0; i < 4; ++i) {
-        std::copy(
-          _deck.begin() + (i * cards_per_suit), _deck.begin() + (i + 1) * cards_per_suit, std::back_inserter(cards[i]));
-    }
-    game.deal(cards);
-    return game;
-}
-
-bridge
-create_random_game(size_t cards_per_suit = 13, unsigned seed = 91189)
-{
-    bridge game;
-    std::array<deck, 4> cards;
-    deck _deck = create_deck(cards_per_suit);
-    std::random_device rd;
-    std::mt19937 g(rd());
-    g.seed(seed);
-    std::shuffle(_deck.begin(), _deck.end(), g);
-    for (int i = 0; i < 4; ++i) {
-        std::copy(
-          _deck.begin() + (i * cards_per_suit), _deck.begin() + (i + 1) * cards_per_suit, std::back_inserter(cards[i]));
-        std::sort(cards[i].begin(), cards[i].end());
-    }
-    game.deal(cards);
-    return game;
-}
-
 }
 
 TEST(bridge, deal)

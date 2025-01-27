@@ -5,6 +5,7 @@
 #include <golv/algorithm/alphabeta.hpp>
 #include <golv/games/bridge.hpp>
 #include <golv/games/connectfour.hpp>
+#include <golv/games/skat.hpp>
 #include <golv/games/tictactoe.hpp>
 #include <golv/util/test_utils.hpp>
 #include <random>
@@ -269,4 +270,73 @@ TEST_F(_alphabeta, bridge_5cps_3_with_memory) {
   auto [solution, best_move] = golv::alphabeta_with_memory(game);
   GOLV_LOG_DEBUG("solution = " << solution << ", best_move = " << best_move);
   ASSERT_EQ(solution, 1);
+}
+
+TEST_F(_alphabeta, skat_5cards) {
+  golv::skat game = create_random_skat_game(5);
+  GOLV_LOG_DEBUG("game = " << game.state());
+
+  auto [solution, best_move] = golv::alphabeta(game);
+  ASSERT_EQ(solution, 5);
+  golv::card expected{golv::kind::ten, golv::suit::hearts};
+  ASSERT_EQ(best_move, expected);
+}
+
+TEST_F(_alphabeta, skat_5cards_rot1) {
+  golv::skat game = create_random_skat_game(5, 1);
+  GOLV_LOG_DEBUG("game = " << game.state());
+  auto [solution, best_move] = golv::alphabeta(game);
+  ASSERT_EQ(solution, 0);
+}
+
+TEST_F(_alphabeta, skat_5cards_rot2) {
+  golv::skat game = create_random_skat_game(5, 2);
+  GOLV_LOG_DEBUG("game = " << game.state());
+  auto [solution, best_move] = golv::alphabeta(game);
+  ASSERT_EQ(solution, 1);
+  golv::card expected{golv::kind::ace, golv::suit::diamonds};
+  ASSERT_EQ(best_move, expected);
+}
+
+TEST_F(_alphabeta, skat_7cards) {
+  golv::skat game = create_random_skat_game(7, 1);
+  GOLV_LOG_DEBUG("game = " << game.state());
+  // auto [solution, best_move] = golv::alphabeta_with_memory(game);
+  auto [solution, best_move] = golv::alphabeta(game);
+  ASSERT_EQ(solution, 1);
+  golv::card expected{golv::kind::ace, golv::suit::diamonds};
+  ASSERT_EQ(best_move, expected);
+}
+
+TEST_F(_alphabeta, skat_7cards_with_mem) {
+  golv::skat game = create_random_skat_game(7, 1);
+  GOLV_LOG_DEBUG("game = " << game.state());
+  auto [solution, best_move] = golv::alphabeta_with_memory(game);
+  ASSERT_EQ(solution, 1);
+  golv::card expected{golv::kind::ace, golv::suit::diamonds};
+  ASSERT_EQ(best_move, expected);
+}
+
+namespace {
+void generate_best_move_sequence(golv::skat g) {
+  int count = -1;
+  while (!g.is_terminal()) {
+    if ((++count % 3) == 0) {
+      GOLV_LOG_DEBUG("game = " << g.state());
+    }
+    auto [solution, best_move] = golv::alphabeta_with_memory(g);
+    GOLV_LOG_DEBUG("solution = " << solution << ", best_move = " << best_move);
+    g.apply_action(best_move);
+  }
+}
+}  // namespace
+
+TEST_F(_alphabeta, skat_8cards_with_mem) {
+  golv::skat game = create_random_skat_game(8, 2);
+  GOLV_LOG_DEBUG("game = " << game.state());
+  auto [solution, best_move] = golv::alphabeta_with_memory(game);
+  ASSERT_EQ(solution, 4);
+  golv::card expected{golv::kind::ace, golv::suit::spades};
+  ASSERT_EQ(best_move, expected);
+  generate_best_move_sequence(game);
 }

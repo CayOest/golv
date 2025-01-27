@@ -6,6 +6,7 @@ add_library(
     games/tictactoe.cpp
     games/connectfour.cpp
     games/bridge.cpp 
+    games/skat.cpp 
     util/logging.cpp
     util/test_utils.cpp
 )
