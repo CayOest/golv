@@ -5,6 +5,8 @@
 #include <golv/util/test_utils.hpp>
 #include <iostream>
 
+#include "../util/test_games.hpp"
+
 using namespace golv;
 
 TEST(skat, create_random) {
@@ -13,7 +15,8 @@ TEST(skat, create_random) {
 }
 
 TEST(skat, legal) {
-  skat game = create_random_skat_game(10);
+  skat game = default_skat_game_10();
+  GOLV_LOG_INFO("" << game.state());
   auto current_player = game.current_player();
   ASSERT_EQ(current_player, 0);
   auto moves = game.legal_actions();
@@ -21,34 +24,34 @@ TEST(skat, legal) {
 }
 
 TEST(skat, apply_action) {
-  skat game = create_random_skat_game(10);
+  skat game = default_skat_game_10();
   auto moves = game.legal_actions();
   EXPECT_NO_THROW(game.apply_action(moves.front()));
 }
 
 TEST(skat, apply_action_invalid) {
-  skat game = create_random_skat_game(10);
+  skat game = default_skat_game_10();
   auto moves = game.legal_actions();
   EXPECT_NO_THROW(game.apply_action(moves.front()));
   EXPECT_THROW(game.apply_action(moves.front()), std::domain_error);
 }
 
 TEST(skat, undo_action) {
-  skat game = create_random_skat_game(10);
+  skat game = default_skat_game_10();
   auto moves = game.legal_actions();
   EXPECT_NO_THROW(game.apply_action(moves.front()));
   EXPECT_NO_THROW(game.undo_action(moves.front()));
 }
 
 TEST(skat, undo_action_invalid) {
-  skat game = create_random_skat_game(10);
+  skat game = default_skat_game_10();
   auto moves = game.legal_actions();
   EXPECT_NO_THROW(game.apply_action(moves.front()));
   EXPECT_THROW(game.undo_action(moves.back()), std::domain_error);
 }
 
 TEST(skat, legal_after_action) {
-  skat game = create_random_skat_game(10);
+  skat game = default_skat_game_10();
   auto moves = game.legal_actions();
   EXPECT_NO_THROW(game.apply_action(moves.front()));
   moves = game.legal_actions();
@@ -59,7 +62,7 @@ TEST(skat, legal_after_action) {
 }
 
 TEST(skat, new_trick) {
-  skat game = create_random_skat_game(10);
+  skat game = default_skat_game_10();
   auto moves = game.legal_actions();
   EXPECT_NO_THROW(game.apply_action(moves.front()));
   moves = game.legal_actions();
@@ -74,7 +77,7 @@ TEST(skat, new_trick) {
 }
 
 TEST(skat, undo_after_trick) {
-  skat game = create_random_skat_game(10);
+  skat game = default_skat_game_10();
   auto moves = game.legal_actions();
   EXPECT_NO_THROW(game.apply_action(moves.front()));
   moves = game.legal_actions();
@@ -91,7 +94,7 @@ TEST(skat, undo_after_trick) {
 }
 
 TEST(skat, trick_winner) {
-  skat game = create_random_skat_game(10);
+  skat game = default_skat_game_10();
   auto moves = game.legal_actions();
   EXPECT_NO_THROW(game.apply_action(moves.front()));
   moves = game.legal_actions();

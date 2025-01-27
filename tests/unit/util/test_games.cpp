@@ -64,3 +64,24 @@ bridge default_game_3() {
   game.deal(cards);
   return game;
 }
+
+// game results from create_random_skat_game(10)
+golv::skat default_skat_game_10() {
+  std::array<std::string, 4> card_strings = {
+      //
+      "9dTd8h9hTh9sKs7c9cAc",  //
+      "8dKdAd7s8sQs8cTcJhJc",  //
+      "Qd7hQhKhAhAsQcKcJdJs",  //
+      "7dTs"                   //
+  };
+  std::array<hand, 4> cards;
+  for (size_t i = 0; i < 3; ++i) {
+    for (size_t j = 0; j < 10; ++j) {
+      cards[i].push_back(card(card_strings[i].substr(j * 2, 2).c_str()));
+    }
+  }
+  cards[3].push_back(card(card_strings[3].substr(0, 2).c_str()));
+  skat game;
+  game.deal(cards);
+  return game;
+}
