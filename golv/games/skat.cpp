@@ -1,8 +1,8 @@
 #include <algorithm>
 #include <array>
 #include <cassert>
-#include <golv/games/exception.hpp>
 #include <golv/games/skat.hpp>
+#include <golv/util/exception.hpp>
 #include <golv/util/logging.hpp>
 #include <iostream>
 
@@ -165,9 +165,32 @@ void skat::undo_action(skat::move_type const& move) {
   }
 }
 
+skat::value_type count_eyes(skat::trick const& trick) {
+  skat::value_type eyes = 0;
+  for (auto const& card : trick.cards_) {
+    switch (card.kind_) {
+      case kind::jack:
+        eyes += 2;
+        break;
+      case kind::ace:
+        eyes += 11;
+        break;
+      case kind::ten:
+        eyes += 10;
+        break;
+      case kind::king:
+        eyes += 4;
+        break;
+      case kind::queen:
+        eyes += 4;
+    }
+  }
+  return eyes;
+}
+
 skat::value_type skat::value() const {
   if (!tricks_.empty() && tricks_.back().cards_.empty()) {
-    return tricks_.back().leader_ == soloist_ ? 1 : 0;
+    return tricks_.back().leader_ == soloist_ ? count_eyes(tricks_[tricks_.size() - 2]) : 0;
   }
 
   return 0;

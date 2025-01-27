@@ -1,10 +1,9 @@
-#include <golv/games/bridge.hpp>
-#include <golv/games/exception.hpp>
-#include <golv/util/logging.hpp>
-
 #include <algorithm>
 #include <array>
 #include <cassert>
+#include <golv/games/bridge.hpp>
+#include <golv/util/exception.hpp>
+#include <golv/util/logging.hpp>
 #include <iostream>
 
 namespace golv {

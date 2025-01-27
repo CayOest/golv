@@ -1,6 +1,6 @@
 
 #include <golv/games/cards.hpp>
-#include <golv/games/exception.hpp>
+#include <golv/util/exception.hpp>
 #include <iterator>
 
 namespace golv {

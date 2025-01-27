@@ -140,7 +140,7 @@ TEST(skat, trick_winner) {
   ASSERT_EQ(tricks.size(), 3);
   winner = tricks.back().leader_;
   ASSERT_EQ(winner, 0);
-  ASSERT_EQ(game.value(), 1);
+  ASSERT_EQ(game.value(), 4);
 }
 
 TEST(skat, trick_1) {
@@ -156,7 +156,7 @@ TEST(skat, trick_1) {
   auto winner = game.tricks().back().leader_;
   ASSERT_EQ(winner, 0);
   auto value = game.value();
-  ASSERT_EQ(value, 1);
+  ASSERT_EQ(value, 25);
   ASSERT_TRUE(game.is_max());
   GOLV_LOG_DEBUG("game = " << game.state());
   game.undo_action(Td);

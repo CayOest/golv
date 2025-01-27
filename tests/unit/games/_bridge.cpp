@@ -2,7 +2,7 @@
 
 #include <algorithm>
 #include <golv/games/bridge.hpp>
-#include <golv/games/exception.hpp>
+#include <golv/util/exception.hpp>
 #include <golv/util/logging.hpp>
 #include <golv/util/test_utils.hpp>
 #include <iterator>

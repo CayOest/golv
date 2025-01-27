@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
-#include <golv/games/exception.hpp>
 #include <golv/util/cyclic_number.hpp>
+#include <golv/util/exception.hpp>
 
 using namespace golv;
 
