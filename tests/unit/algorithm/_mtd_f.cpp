@@ -7,6 +7,8 @@
 #include <golv/games/tictactoe.hpp>
 #include <golv/util/test_utils.hpp>
 
+#include "../util/test_games.hpp"
+
 using namespace golv;
 
 class _mtd_f : public ::testing::Test {
@@ -96,7 +98,7 @@ TEST_F(_mtd_f, connectfour_3) {
 }
 
 TEST_F(_mtd_f, bridge_5cps) {
-  auto game = create_random_game(5);
+  auto game = default_game_5();
   GOLV_LOG_DEBUG("game = " << game.state());
 
   int first_guess = 7;
@@ -106,7 +108,7 @@ TEST_F(_mtd_f, bridge_5cps) {
 }
 
 TEST_F(_mtd_f, bridge_5cps_rot1_with_memory) {
-  auto game = create_random_game(5, 1);
+  auto game = default_game_5(1);
   GOLV_LOG_DEBUG("game = " << game.state());
 
   int first_guess = 7;
@@ -116,7 +118,7 @@ TEST_F(_mtd_f, bridge_5cps_rot1_with_memory) {
 }
 
 TEST_F(_mtd_f, bridge_5cps_1_with_memory) {
-  auto game = create_random_game(5);
+  auto game = default_game_5();
   game.set_soloist(1);
   GOLV_LOG_DEBUG("game = " << game.state());
 
@@ -127,7 +129,7 @@ TEST_F(_mtd_f, bridge_5cps_1_with_memory) {
 }
 
 TEST_F(_mtd_f, bridge_5cps_2_with_memory) {
-  auto game = create_random_game(5);
+  auto game = default_game_5();
   game.set_soloist(2);
   GOLV_LOG_DEBUG("game = " << game.state());
 
@@ -138,7 +140,7 @@ TEST_F(_mtd_f, bridge_5cps_2_with_memory) {
 }
 
 TEST_F(_mtd_f, bridge_5cps_3_with_memory) {
-  auto game = create_random_game(5);
+  auto game = default_game_5();
   game.set_soloist(3);
   GOLV_LOG_DEBUG("game = " << game.state());
 

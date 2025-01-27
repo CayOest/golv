@@ -8,6 +8,8 @@
 #include <iterator>
 #include <random>
 
+#include "../util/test_games.hpp"
+
 using namespace golv;
 
 TEST(bridge, create_deck)
@@ -53,7 +55,7 @@ TEST(bridge, state)
 TEST(bridge, apply_action)
 {
     auto game = create_game();
-    game.apply_action({ kind::ace, suit::spades });
+    game.apply_action("As");
     auto state = game.state();
     ASSERT_EQ(state[0], 'A');
     ASSERT_EQ(state[1], 's');
@@ -79,51 +81,51 @@ TEST(bridge, apply_action_4)
 
 TEST(bridge, legal_actions)
 {
-    auto game = create_random_game(13);
-    GOLV_LOG_DEBUG("" << game.state());
-    game.apply_action({ kind::king, suit::spades });
-    GOLV_LOG_DEBUG(game.state());
-    ASSERT_EQ(game.value(), 0);
-    auto moves2 = game.legal_actions();
-    ASSERT_EQ(moves2.size(), 5);
-    game.apply_action(moves2.front());
-    ASSERT_EQ(game.value(), 0);
-    auto moves3 = game.legal_actions();
-    ASSERT_EQ(moves3.size(), 4);
-    game.apply_action(moves3.front());
-    ASSERT_EQ(game.value(), 0);
-    auto moves4 = game.legal_actions();
-    ASSERT_EQ(moves4.size(), 2);
-    game.apply_action(moves4.front());
-    ASSERT_EQ(game.value(), 1);
-    ASSERT_EQ(game.tricks().size(), 2);
-    ASSERT_EQ(game.current_player(), 0);
-    //------------------------------------
-    GOLV_LOG_DEBUG("" << game.state());
-    auto moves5 = game.legal_actions();
-    ASSERT_EQ(moves5.size(), 12);
-    game.apply_action(moves5.back());
-    ASSERT_EQ(game.value(), 0);
-    auto moves6 = game.legal_actions();
-    ASSERT_EQ(moves6.size(), 4);
-    game.apply_action(moves6.front());
-    ASSERT_EQ(game.value(), 0);
-    auto moves7 = game.legal_actions();
-    ASSERT_EQ(moves7.size(), 3);
-    game.apply_action(moves7.back());
-    ASSERT_EQ(game.value(), 0);
-    auto moves8 = game.legal_actions();
-    ASSERT_EQ(moves8.size(), 1);
-    game.apply_action(moves8.back());
-    ASSERT_EQ(game.value(), 1);
-    ASSERT_EQ(game.tricks().size(), 3);
-    ASSERT_EQ(game.current_player(), 2);
+  auto game = default_game_13();
+  GOLV_LOG_DEBUG("" << game.state());
+  game.apply_action({kind::king, suit::spades});
+  GOLV_LOG_DEBUG(game.state());
+  ASSERT_EQ(game.value(), 0);
+  auto moves2 = game.legal_actions();
+  ASSERT_EQ(moves2.size(), 5);
+  game.apply_action(moves2.front());
+  ASSERT_EQ(game.value(), 0);
+  auto moves3 = game.legal_actions();
+  ASSERT_EQ(moves3.size(), 4);
+  game.apply_action(moves3.front());
+  ASSERT_EQ(game.value(), 0);
+  auto moves4 = game.legal_actions();
+  ASSERT_EQ(moves4.size(), 2);
+  game.apply_action(moves4.front());
+  ASSERT_EQ(game.value(), 1);
+  ASSERT_EQ(game.tricks().size(), 2);
+  ASSERT_EQ(game.current_player(), 0);
+  //------------------------------------
+  GOLV_LOG_DEBUG("" << game.state());
+  auto moves5 = game.legal_actions();
+  ASSERT_EQ(moves5.size(), 12);
+  game.apply_action(moves5.back());
+  ASSERT_EQ(game.value(), 0);
+  auto moves6 = game.legal_actions();
+  ASSERT_EQ(moves6.size(), 4);
+  game.apply_action(moves6.front());
+  ASSERT_EQ(game.value(), 0);
+  auto moves7 = game.legal_actions();
+  ASSERT_EQ(moves7.size(), 3);
+  game.apply_action(moves7.back());
+  ASSERT_EQ(game.value(), 0);
+  auto moves8 = game.legal_actions();
+  ASSERT_EQ(moves8.size(), 1);
+  game.apply_action(moves8.back());
+  ASSERT_EQ(game.value(), 1);
+  ASSERT_EQ(game.tricks().size(), 3);
+  ASSERT_EQ(game.current_player(), 2);
 }
 
 TEST(bridge, terminal)
 {
     constexpr size_t cards_per_suit = 3;
-    auto game = create_random_game(cards_per_suit);
+    auto game = default_game_3();
     for (size_t i = 1; i < cards_per_suit * 4; ++i) {
         auto moves = game.legal_actions();
         game.apply_action(moves.front());
@@ -135,23 +137,23 @@ TEST(bridge, terminal)
 
 TEST(bridge, undo_action)
 {
-    auto game = create_random_game(13);
-    auto move = game.legal_actions().front();
-    game.apply_action(move);
-    ASSERT_EQ(game.current_player(), 1);
-    game.undo_action(move);
-    ASSERT_EQ(game.current_player(), 0);
+  auto game = default_game_13();
+  auto move = game.legal_actions().front();
+  game.apply_action(move);
+  ASSERT_EQ(game.current_player(), 1);
+  game.undo_action(move);
+  ASSERT_EQ(game.current_player(), 0);
 }
 
 TEST(bridge, undo_action_after_trick)
 {
-    auto game = create_random_game(13);
-    GOLV_LOG_DEBUG("" << game.state());
-    std::vector<bridge::move_type> moves;
-    for (int i = 0; i < 4; ++i) {
-        moves.push_back(game.legal_actions().front());
-        game.apply_action(moves.back());
-    }
+  auto game = default_game_13();
+  GOLV_LOG_DEBUG("" << game.state());
+  std::vector<bridge::move_type> moves;
+  for (int i = 0; i < 4; ++i) {
+    moves.push_back(game.legal_actions().front());
+    game.apply_action(moves.back());
+  }
     ASSERT_EQ(game.current_player(), 0);
     game.undo_action(moves.back());
     ASSERT_EQ(game.current_player(), 3);
@@ -162,15 +164,15 @@ TEST(bridge, undo_action_after_trick)
 
 TEST(bridge, undo)
 {
-    auto game = create_random_game(3);
-    GOLV_LOG_DEBUG("" << game.state());
-    std::vector<bridge::move_type> moves;
-    for (int i = 0; i < 3; ++i) {
-        for (int i = 0; i < 4; ++i) {
-            moves.push_back(game.legal_actions().front());
-            game.apply_action(moves.back());
-        }
+  auto game = default_game_3();
+  GOLV_LOG_DEBUG("" << game.state());
+  std::vector<bridge::move_type> moves;
+  for (int i = 0; i < 3; ++i) {
+    for (int i = 0; i < 4; ++i) {
+      moves.push_back(game.legal_actions().front());
+      game.apply_action(moves.back());
     }
+  }
     ASSERT_TRUE(game.is_terminal());
     game.undo_action(moves.back());
     moves.pop_back();

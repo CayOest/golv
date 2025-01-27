@@ -25,6 +25,7 @@ add_executable(
   algorithm/_mtd_f.cpp
   algorithm/_cfr.cpp
   util/_cyclic_number.cpp
+  util/test_games.cpp
 )
 
 target_include_directories(unit PRIVATE ${CMAKE_SOURCE_DIR})

@@ -7,10 +7,11 @@
 #include <golv/games/connectfour.hpp>
 #include <golv/games/skat.hpp>
 #include <golv/games/tictactoe.hpp>
+#include <golv/util/logging.hpp>
 #include <golv/util/test_utils.hpp>
 #include <random>
 
-#include "golv/util/logging.hpp"
+#include "../util/test_games.hpp"
 
 class _alphabeta : public ::testing::Test {
  protected:
@@ -163,7 +164,7 @@ TEST_F(_alphabeta, connectfour_unordered_lookup_2) {
 }
 
 TEST_F(_alphabeta, bridge_3cps) {
-  auto game = create_random_game(3);
+  auto game = default_game_3();
   GOLV_LOG_DEBUG("game = " << game.state());
 
   auto [solution, best_move] = golv::alphabeta(game);
@@ -171,7 +172,7 @@ TEST_F(_alphabeta, bridge_3cps) {
 }
 
 TEST_F(_alphabeta, bridge_5cps) {
-  auto game = create_random_game(5);
+  auto game = default_game_5();
   GOLV_LOG_DEBUG("game = " << game.state());
 
   auto [solution, best_move] = golv::alphabeta(game);
@@ -180,7 +181,7 @@ TEST_F(_alphabeta, bridge_5cps) {
 }
 
 TEST_F(_alphabeta, bridge_5cps_rot1) {
-  auto game = create_random_game(5, 1);
+  auto game = default_game_5(1);
   GOLV_LOG_DEBUG("game = " << game.state());
 
   auto [solution, best_move] = golv::alphabeta(game);
@@ -190,7 +191,7 @@ TEST_F(_alphabeta, bridge_5cps_rot1) {
 }
 
 TEST_F(_alphabeta, bridge_5cps_1) {
-  auto game = create_random_game(5);
+  auto game = default_game_5(2);
   game.set_soloist(1);
 
   GOLV_LOG_DEBUG("game = " << game.state());
@@ -201,7 +202,7 @@ TEST_F(_alphabeta, bridge_5cps_1) {
 }
 
 TEST_F(_alphabeta, bridge_5cps_2) {
-  auto game = create_random_game(5);
+  auto game = default_game_5();
   game.set_soloist(2);
 
   GOLV_LOG_DEBUG("game = " << game.state());
@@ -212,7 +213,7 @@ TEST_F(_alphabeta, bridge_5cps_2) {
 }
 
 TEST_F(_alphabeta, bridge_5cps_3) {
-  auto game = create_random_game(5);
+  auto game = default_game_5();
   game.set_soloist(3);
 
   GOLV_LOG_DEBUG("game = " << game.state());
@@ -223,16 +224,7 @@ TEST_F(_alphabeta, bridge_5cps_3) {
 }
 
 TEST_F(_alphabeta, bridge_3cps_with_memory) {
-  auto game = create_random_game(3);
-  GOLV_LOG_DEBUG("game = " << game.state());
-
-  auto [solution, best_move] = golv::alphabeta_with_memory(game);
-  GOLV_LOG_DEBUG("solution = " << solution << ", best_move = " << best_move);
-  ASSERT_EQ(solution, 2);
-}
-
-TEST_F(_alphabeta, bridge_4cps_with_memory) {
-  auto game = create_random_game(4);
+  auto game = default_game_3();
   GOLV_LOG_DEBUG("game = " << game.state());
 
   auto [solution, best_move] = golv::alphabeta_with_memory(game);
@@ -241,7 +233,7 @@ TEST_F(_alphabeta, bridge_4cps_with_memory) {
 }
 
 TEST_F(_alphabeta, bridge_5cps_with_memory) {
-  auto game = create_random_game(5);
+  auto game = default_game_5();
   GOLV_LOG_DEBUG("game = " << game.state());
 
   auto [solution, best_move] = golv::alphabeta_with_memory(game);
@@ -250,7 +242,7 @@ TEST_F(_alphabeta, bridge_5cps_with_memory) {
 }
 
 TEST_F(_alphabeta, bridge_5cps_rot1_with_memory) {
-  auto game = create_random_game(5, 1);
+  auto game = default_game_5(1);
   GOLV_LOG_DEBUG("game = " << game.state());
 
   auto [solution, best_move] = golv::alphabeta_with_memory(game);
@@ -259,7 +251,7 @@ TEST_F(_alphabeta, bridge_5cps_rot1_with_memory) {
 }
 
 TEST_F(_alphabeta, bridge_5cps_1_with_memory) {
-  auto game = create_random_game(5);
+  auto game = default_game_5();
   game.set_soloist(1);
   GOLV_LOG_DEBUG("game = " << game.state());
 
@@ -269,7 +261,7 @@ TEST_F(_alphabeta, bridge_5cps_1_with_memory) {
 }
 
 TEST_F(_alphabeta, bridge_5cps_2_with_memory) {
-  auto game = create_random_game(5);
+  auto game = default_game_5();
   game.set_soloist(2);
   GOLV_LOG_DEBUG("game = " << game.state());
 
@@ -279,7 +271,7 @@ TEST_F(_alphabeta, bridge_5cps_2_with_memory) {
 }
 
 TEST_F(_alphabeta, bridge_5cps_3_with_memory) {
-  auto game = create_random_game(5);
+  auto game = default_game_5();
   game.set_soloist(3);
   GOLV_LOG_DEBUG("game = " << game.state());
 

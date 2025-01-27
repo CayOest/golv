@@ -31,7 +31,7 @@ auto test_mtd_f(skat const& g) {
 }
 
 int main() {
-  int max_n = 5;
+  int max_n = 10;
   golv::set_log_level(golv::log_level::error);
   for (int n = 3; n <= std::min(7, max_n); ++n) {
     auto game = create_random_skat_game(n, 2);
