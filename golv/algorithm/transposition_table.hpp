@@ -80,6 +80,8 @@ struct unordered_table
 
     map_type map_;
 
+    auto size() const { return map_.size(); }
+
     constexpr bool is_memorable(GameT const& game) const { return game.is_max(); }
 
     storage_type const& get(typename GameT::state_type const& state) const

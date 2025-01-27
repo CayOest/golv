@@ -7,6 +7,7 @@ add_library(
     games/connectfour.cpp
     games/bridge.cpp 
     util/logging.cpp
+    util/test_utils.cpp
 )
 
 target_include_directories(golv PRIVATE ${CMAKE_SOURCE_DIR})
