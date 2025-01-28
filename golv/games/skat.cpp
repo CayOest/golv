@@ -100,22 +100,36 @@ skat::player_type skat::get_trick_winner() const {
 }
 
 skat::state_type skat::state() const {
-  std::stringstream ss;
-  if (!tricks_.empty() && !tricks_.back().cards_.empty()) {
-    for (auto const& card : tricks_.back().cards_) {
-      ss << card;
+  skat::state_type bits = 0;
+  for (size_t i = 0; i < state_.size() - 1; ++i) {
+    for (auto const& c : state_[i]) {
+      for (size_t x = 0; x < c.code().size(); ++x) {
+        if (c.code().test(x)) {
+          bits.set(x);
+          break;
+        }
+      }
     }
-    ss << " --- ";
   }
-  for (auto const& cards : state_) {
-    for (auto const& card : cards) {
-      ss << card;
+  if (*current_player_ == 1) {
+    bits.set(104);
+  } else if (*current_player_ == 2) {
+    bits.set(105);
+  }
+  if (!tricks_.empty()) {
+    for (auto const& c : tricks_.back().cards_) {
+      for (size_t x = 0; x < c.code().size(); ++x) {
+        if (c.code().test(x)) {
+          bits.set(x + 52);
+          break;
+        }
+      }
     }
-    ss << " | ";
   }
-  ss << *current_player_;
-  return ss.str();
+  return bits;
 }
+
+bool skat::is_new_trick() const { return !tricks_.empty() && tricks_.back().cards_.empty(); }
 
 void skat::apply_action(skat::move_type const& move) {
   GOLV_LOG_TRACE("apply_action for player " << *current_player_ << ": " << move);
@@ -207,8 +221,6 @@ bool skat::is_terminal() const {
 }
 
 bool skat::is_max() const { return *current_player_ == soloist_; }
-
-bool skat::is_new_trick() const { return !tricks_.empty() && tricks_.back().cards_.empty(); }
 
 void skat::deal(internal_state_type const& state) { state_ = state; }
 

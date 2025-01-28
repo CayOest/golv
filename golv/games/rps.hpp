@@ -31,6 +31,7 @@ class rock_paper_scissors {
     move_range legal_actions() const { return "rps"; }
 
     void set_max(int i) { max_player_ = i; }
+    bool hash_me() const { return true; }
 
     player_type current_player() const { return state_.size() == 0 ? 0 : 1; }
 

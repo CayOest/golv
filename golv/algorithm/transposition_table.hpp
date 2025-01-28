@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm>
+#include <bitset>
 #include <golv/traits/game.hpp>
 #include <iostream>
 #include <limits>
@@ -82,7 +83,10 @@ struct unordered_table
 
     auto size() const { return map_.size(); }
 
-    constexpr bool is_memorable(GameT const& game) const { return game.is_max(); }
+    constexpr bool is_memorable(GameT const& game) const {  //
+      return game.hash_me();
+      // return game.is_max();
+    }
 
     storage_type const& get(typename GameT::state_type const& state) const
     {
@@ -103,6 +107,25 @@ struct unordered_table
     }
 };
 
+template <class state_type, class storage_type>
+struct _sorter {
+  void operator()(std::vector<std::pair<state_type, storage_type>>& vec) {
+    std::sort(vec.begin(), vec.end(), [](auto const& a, auto const& b) {
+      if (a.first.size() != b.first.size()) return a.first.size() > b.first.size();
+      return a.first < b.first;
+    });
+  }
+};
+
+template <class storage_type, size_t N>
+struct _sorter<std::bitset<N>, storage_type> {
+  void operator()(std::vector<std::pair<std::bitset<N>, storage_type>>& vec) {
+    // todo
+    // std::sort(vec.begin(), vec.end(),
+    //           [](auto const& a, auto const& b) { return a.first.to_ullong() < b.first.to_ullong(); });
+  }
+};
+
 template <class GameT>
 std::ostream& operator<<(std::ostream& os, unordered_table<GameT> const& t) {
   os << "Unordered Map = " << t.map_.size() << std::endl;
@@ -112,10 +135,7 @@ std::ostream& operator<<(std::ostream& os, unordered_table<GameT> const& t) {
   for (auto const& [key, value] : t.map_) {
     vec.push_back(std::make_pair(key, value));
   }
-  std::sort(vec.begin(), vec.end(), [](auto const& a, auto const& b) {
-    if (a.first.size() != b.first.size()) return a.first.size() > b.first.size();
-    return a.first < b.first;
-  });
+  _sorter<typename GameT::state_type, storage_type>{}(vec);
   for (auto const& [key, value] : vec) {
     os << key << " = " << static_cast<int>(value.first) << ", " << value.second << std::endl;
   }

@@ -5,9 +5,9 @@
 
 namespace golv {
 
-uint64_t to_code(kind kind, suit s) {
-  uint64_t code = (uint64_t(1) << static_cast<uint64_t>(kind));
-  code <<= (static_cast<uint64_t>(static_cast<uint64_t>(s) * (static_cast<uint64_t>(kind::deuce) + 1)));
+card::code_type to_code(kind k, suit s) {
+  card::code_type code;
+  code.set(13 * static_cast<size_t>(s) + static_cast<size_t>(k));
   return code;
 }
 
@@ -143,7 +143,9 @@ std::string to_string(const hand& h) {
   return ss.str();
 }
 
-bool operator<(const card& left, const card& right) { return left.code() < right.code(); }
+bool operator<(const card& left, const card& right) {  //
+  return left.code().to_ullong() < right.code().to_ullong();
+}
 
 hand create_bridge_deck() { return create_deck<13>(); }
 hand create_skat_deck() { return create_deck<8>(); }
