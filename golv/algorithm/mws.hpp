@@ -1,10 +1,10 @@
 #include <golv/algorithm/move_ordering.hpp>
-#include <golv/algorithm/unordered_table.hpp>
+#include <golv/algorithm/mws_unordered_table.hpp>
 #include <golv/traits/game.hpp>
 
 namespace golv {
 template <Game GameT, typename MoveOrderingT = no_ordering, TranspositionTable<GameT> TableT = no_table<GameT>>
-class mws {
+class minimal_window_search {
  public:
   using game_type = GameT;
   using value_type = typename game_type::value_type;
@@ -15,7 +15,7 @@ class mws {
   constexpr static value_type min_value = std::numeric_limits<value_type>::lowest() / 2;
   constexpr static value_type max_value = std::numeric_limits<value_type>::max() / 2;
 
-  mws(GameT game, MoveOrderingT move_ordering = no_ordering{}, TableT table = no_table<game_type>{})
+  minimal_window_search(GameT game, MoveOrderingT move_ordering = no_ordering{}, TableT table = no_table<game_type>{})
       : game_(game), move_ordering_(move_ordering), table_(table) {}
 
   bool solve(value_type bound) { return _solve(bound); }
@@ -37,15 +37,11 @@ class mws {
     if constexpr (with_table<table_type>::value) {
       if (table_.is_memorable(game_)) {
         auto lookup = table_.get(game_.state());
-        if (lookup.first == lookup_value_type::lower_bound) {
-          if (bound - value <= lookup.second) {
-            return true;
-          }
+        if (bound - value <= lookup.first) {
+          return true;
         }
-        if (lookup.first == lookup_value_type::upper_bound) {
-          if (bound - value >= lookup.second) {
-            return false;
-          }
+        if (bound - value >= lookup.second) {
+          return false;
         }
       }
     }
@@ -65,16 +61,12 @@ class mws {
     if constexpr (with_ordering<move_ordering_type>::value) {
       std::sort(std::begin(legal_actions), std::end(legal_actions), move_ordering_);
     }
-    // auto childrenRange = game_.validCards();
-    // auto children = std::vector<Card>(childrenRange.first, childrenRange.second);
-
-    bool son = false;
 
     for (auto a : legal_actions) {
       game_.apply_action(a);
       // value_type move_value = game_.value();
       // accumulated_value += move_value;
-      son = _solve(bound, depth + 1);
+      bool son = _solve(bound, depth + 1);
       game_.undo_action(a);
 
       // game_.advance(*it);
@@ -82,10 +74,14 @@ class mws {
       // game_.regress();
 
       if (son == game_.is_max()) {
-        if (game_.is_max()) {
-          _save_value(lookup_value_type::lower_bound, bound - value);
-        } else {
-          _save_value(lookup_value_type::upper_bound, bound - value);
+        if constexpr (with_table<table_type>::value) {
+          if (table_.is_memorable(game_)) {
+            if (game_.is_max()) {
+              table_.update_lower(game_.state(), bound - value);
+            } else {
+              table_.update_upper(game_.state(), bound - value);
+            }
+          }
         }
         if (depth == 0) {
           best_move_ = a;
@@ -105,11 +101,17 @@ class mws {
       // 	return son;
       // }
     }
-    if (game_.is_max()) {
-      _save_value(lookup_value_type::upper_bound, bound - value);
-    } else {
-      _save_value(lookup_value_type::lower_bound, bound - value);
+
+    if constexpr (with_table<table_type>::value) {
+      if (table_.is_memorable(game_)) {
+        if (game_.is_max()) {
+          table_.update_upper(game_.state(), bound - value);
+        } else {
+          table_.update_lower(game_.state(), bound - value);
+        }
+      }
     }
+
     // if (isHash && hash != 0) {
     // 	if (!isMax) {
     // 		tt_.updateLower(hash, bound - pts.first);
@@ -122,18 +124,26 @@ class mws {
     return !game_.is_max();
   }
 
-  void _save_value(lookup_value_type lookup_value, value_type value) {
-    if constexpr (with_table<table_type>::value) {
-      if (table_.is_memorable(game_)) {
-        table_.set(game_.state(), lookup_value, value);
-      }
-    }
-  }
+  move_type best_move() const { return best_move_; }
 
   game_type game_;
   move_ordering_type move_ordering_;
   table_type table_;
   move_type best_move_;
 };
+
+template <Game GameT, typename LessT = no_ordering, typename LookupT = no_table<GameT>>
+auto mws(GameT g, typename GameT::value_type test_value, LessT o = no_ordering{}, LookupT l = no_table<GameT>{}) {
+  minimal_window_search mws(g, o, l);
+  auto solution = mws.solve(test_value);
+  return std::make_pair(solution, mws.best_move());
+}
+
+template <Game GameT, typename LessT = std::less<typename GameT::move_type>>
+auto mws_with_memory(GameT g, typename GameT::value_type test_value, LessT o = std::less<typename GameT::move_type>{}) {
+  minimal_window_search mws(g, o, mws_unordered_table<GameT>{});
+  auto solution = mws.solve(test_value);
+  return std::make_pair(solution, mws.best_move());
+}
 
 }  // namespace golv

@@ -20,9 +20,18 @@ class mws_f : public ::testing::Test {
 TEST_F(mws_f, tictactoe_tie) {
   golv::tictactoe game;
   auto expected = 0;
-  auto lower = mws(game).solve(expected - 1);
+  auto [lower, best_move] = mws(game, expected - 1);
   ASSERT_TRUE(lower);
-  auto upper = mws(game).solve(expected);
+  auto [upper, not_best_move] = mws(game, expected);
+  ASSERT_FALSE(upper);
+}
+
+TEST_F(mws_f, tictactoe_tie_mem) {
+  golv::tictactoe game;
+  auto expected = 0;
+  auto [lower, best_move] = mws_with_memory(game, expected - 1);
+  ASSERT_TRUE(lower);
+  auto [upper, not_best_move] = mws_with_memory(game, expected);
   ASSERT_FALSE(upper);
 }
 
@@ -31,9 +40,20 @@ TEST_F(mws_f, tictactoe_win) {
   game.apply_action(4);
   game.apply_action(1);
   auto expected = 1;
-  auto lower = mws(game).solve(expected - 1);
+  auto [lower, best_move] = mws(game, expected - 1);
   ASSERT_TRUE(lower);
-  auto upper = mws(game).solve(expected);
+  auto [upper, not_best_move] = mws(game, expected);
+  ASSERT_FALSE(upper);
+}
+
+TEST_F(mws_f, tictactoe_win_mem) {
+  golv::tictactoe game;
+  game.apply_action(4);
+  game.apply_action(1);
+  auto expected = 1;
+  auto [lower, best_move] = mws_with_memory(game, expected - 1);
+  ASSERT_TRUE(lower);
+  auto [upper, not_best_move] = mws_with_memory(game, expected);
   ASSERT_FALSE(upper);
 }
 
@@ -43,9 +63,21 @@ TEST_F(mws_f, tictactoe_loss) {
   game.apply_action(4);
   game.apply_action(7);
   auto expected = -1;
-  auto lower = mws(game).solve(expected - 1);
+  auto [lower, best_move] = mws(game, expected - 1);
   ASSERT_TRUE(lower);
-  auto upper = mws(game).solve(expected);
+  auto [upper, not_best_move] = mws(game, expected);
+  ASSERT_FALSE(upper);
+}
+
+TEST_F(mws_f, tictactoe_loss_mem) {
+  golv::tictactoe game;
+  game.apply_action(1);
+  game.apply_action(4);
+  game.apply_action(7);
+  auto expected = -1;
+  auto [lower, best_move] = mws_with_memory(game, expected - 1);
+  ASSERT_TRUE(lower);
+  auto [upper, not_best_move] = mws_with_memory(game, expected);
   ASSERT_FALSE(upper);
 }
 
@@ -60,9 +92,21 @@ TEST_F(mws_f, connectfour_1) {
   std::for_each(std::begin(moves), std::end(moves), [&game](auto move) { game.apply_action(move); });
 
   auto expected = +1;
-  auto lower = mws(game).solve(expected - 1);
+  auto [lower, best_move] = mws(game, expected - 1);
   ASSERT_TRUE(lower);
-  auto upper = mws(game).solve(expected);
+  auto [upper, not_best_move] = mws(game, expected);
+  ASSERT_FALSE(upper);
+}
+
+TEST_F(mws_f, connectfour_1_mem) {
+  golv::connectfour game;
+  const auto moves = scenario1;
+  std::for_each(std::begin(moves), std::end(moves), [&game](auto move) { game.apply_action(move); });
+
+  auto expected = +1;
+  auto [lower, best_move] = mws_with_memory(game, expected - 1);
+  ASSERT_TRUE(lower);
+  auto [upper, not_best_move] = mws_with_memory(game, expected);
   ASSERT_FALSE(upper);
 }
 
@@ -77,9 +121,21 @@ TEST_F(mws_f, connectfour_2) {
   std::for_each(std::begin(moves), std::end(moves), [&game](auto move) { game.apply_action(move); });
 
   auto expected = -1;
-  auto lower = mws(game).solve(expected - 1);
+  auto [lower, best_move] = mws(game, expected - 1);
   ASSERT_TRUE(lower);
-  auto upper = mws(game).solve(expected);
+  auto [upper, not_best_move] = mws(game, expected);
+  ASSERT_FALSE(upper);
+}
+
+TEST_F(mws_f, connectfour_2_mem) {
+  golv::connectfour game;
+  const auto moves = scenario2;
+  std::for_each(std::begin(moves), std::end(moves), [&game](auto move) { game.apply_action(move); });
+
+  auto expected = -1;
+  auto [lower, best_move] = mws_with_memory(game, expected - 1);
+  ASSERT_TRUE(lower);
+  auto [upper, not_best_move] = mws_with_memory(game, expected);
   ASSERT_FALSE(upper);
 }
 
@@ -93,9 +149,21 @@ TEST_F(mws_f, connectfour_3) {
   std::for_each(std::begin(moves), std::end(moves), [&game](auto move) { game.apply_action(move); });
 
   auto expected = -1;
-  auto lower = mws(game).solve(expected - 1);
+  auto [lower, best_move] = mws(game, expected - 1);
   ASSERT_TRUE(lower);
-  auto upper = mws(game).solve(expected);
+  auto [upper, not_best_move] = mws(game, expected);
+  ASSERT_FALSE(upper);
+}
+
+TEST_F(mws_f, connectfour_3_mem) {
+  golv::connectfour game;
+  const auto moves = scenario3;
+  std::for_each(std::begin(moves), std::end(moves), [&game](auto move) { game.apply_action(move); });
+
+  auto expected = -1;
+  auto [lower, best_move] = mws_with_memory(game, expected - 1);
+  ASSERT_TRUE(lower);
+  auto [upper, not_best_move] = mws_with_memory(game, expected);
   ASSERT_FALSE(upper);
 }
 
