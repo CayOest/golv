@@ -27,6 +27,5 @@
 *.out
 *.app
 
-/build/**
-/build_clang/**
+/*build*/**
 /.cache/**

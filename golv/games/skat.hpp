@@ -27,7 +27,7 @@ class skat {
   using value_type = short;
   using player_type = unsigned short;
   using internal_state_type = std::array<move_range, num_players + 1>;
-  using state_type = std::bitset<106>;  // 2*52+2 for unique id of the current state - can be reduced?
+  using state_type = card::code_type;
   using cyclic_player_type = cyclic_number<player_type, num_players>;
 
   struct trick {
@@ -46,7 +46,7 @@ class skat {
   bool is_new_trick() const;
 
  public:
-  bool hash_me() const { return true; }
+  bool hash_me() const { return is_new_trick(); }
   move_range legal_actions() const;
   value_type value() const;
   bool is_max() const;

@@ -103,28 +103,13 @@ skat::state_type skat::state() const {
   skat::state_type bits = 0;
   for (size_t i = 0; i < state_.size() - 1; ++i) {
     for (auto const& c : state_[i]) {
-      for (size_t x = 0; x < c.code().size(); ++x) {
-        if (c.code().test(x)) {
-          bits.set(x);
-          break;
-        }
-      }
+      bits |= c.code();
     }
   }
   if (*current_player_ == 1) {
-    bits.set(104);
+    bits |= state_[3][0].code();
   } else if (*current_player_ == 2) {
-    bits.set(105);
-  }
-  if (!tricks_.empty()) {
-    for (auto const& c : tricks_.back().cards_) {
-      for (size_t x = 0; x < c.code().size(); ++x) {
-        if (c.code().test(x)) {
-          bits.set(x + 52);
-          break;
-        }
-      }
-    }
+    bits |= state_[3][1].code();
   }
   return bits;
 }
