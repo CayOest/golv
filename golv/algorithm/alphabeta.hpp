@@ -2,7 +2,7 @@
 
 #include <algorithm>
 #include <golv/algorithm/move_ordering.hpp>
-#include <golv/algorithm/transposition_table.hpp>
+#include <golv/algorithm/unordered_table.hpp>
 #include <golv/traits/game.hpp>
 #include <golv/util/logging.hpp>
 #include <iostream>

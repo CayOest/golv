@@ -1,5 +1,5 @@
 #include <golv/algorithm/move_ordering.hpp>
-#include <golv/algorithm/transposition_table.hpp>
+#include <golv/algorithm/unordered_table.hpp>
 #include <golv/traits/game.hpp>
 
 namespace golv {
@@ -34,16 +34,18 @@ class mws {
     // bool isHash = game_.currentIsLead();
 
     // uint64_t hash = 0;
-    if (table_.is_memorable(game_)) {
-      auto lookup = table_.get(game_.state());
-      if (lookup.first == lookup_value_type::lower_bound) {
-        if (bound - value <= lookup.second) {
-          return true;
+    if constexpr (with_table<table_type>::value) {
+      if (table_.is_memorable(game_)) {
+        auto lookup = table_.get(game_.state());
+        if (lookup.first == lookup_value_type::lower_bound) {
+          if (bound - value <= lookup.second) {
+            return true;
+          }
         }
-      }
-      if (lookup.first == lookup_value_type::upper_bound) {
-        if (bound - value >= lookup.second) {
-          return false;
+        if (lookup.first == lookup_value_type::upper_bound) {
+          if (bound - value >= lookup.second) {
+            return false;
+          }
         }
       }
     }
