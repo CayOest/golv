@@ -23,13 +23,10 @@ class minimal_window_search {
 
   bool _solve(value_type bound, int depth = 0) {
     auto value = game_.value();
-#if 0
     if (value > bound) return true;
-#else
     if (game_.is_terminal()) {
       return value > bound;
     }
-#endif
 
     // auto pts = game_.counts();
     // if (pts.first > bound) return true;
@@ -50,24 +47,8 @@ class minimal_window_search {
         }
       }
     }
-    // if (isHash) {
-    // 	hash = game_.getState();
-    // 	auto val = tt_.readLower(hash);
-    // 	if (bound - pts.first <= val) {
-    // 		return true;
-    // 	}
-    // 	val = tt_.readUpper(hash);
-    // 	if (bound - pts.first >= val) {
-    // 		return false;
-    // 	}
-    // }
+
     auto legal_actions = game_.legal_actions();
-    // if (depth == 0) {
-    //   GOLV_LOG_DEBUG("legal_actions = ");
-    //   for (auto const& a : legal_actions) {
-    //     GOLV_LOG_DEBUG(a);
-    //   }
-    // }
 
     if constexpr (with_ordering<move_ordering_type>::value) {
       std::sort(std::begin(legal_actions), std::end(legal_actions), move_ordering_);
@@ -75,14 +56,8 @@ class minimal_window_search {
 
     for (auto a : legal_actions) {
       game_.apply_action(a);
-      // value_type move_value = game_.value();
-      // accumulated_value += move_value;
       bool son = _solve(bound, depth + 1);
       game_.undo_action(a);
-
-      // game_.advance(*it);
-      // son = _solve(bound, depth + 1);
-      // game_.regress();
 
       if (son == game_.is_max()) {
         if constexpr (with_table<table_type>::value) {
@@ -99,18 +74,6 @@ class minimal_window_search {
         }
         return son;
       }
-
-      // if (son == isMax) {
-      // 	if (isHash) {
-      // 		if (isMax)
-      // 			tt_.updateLower(hash, bound - pts.first);
-      // 		else
-      // 			tt_.updateUpper(hash, bound - pts.first);
-      // 	}
-      // 	if (depth == 0)
-      // 		solution_.card = { *it };
-      // 	return son;
-      // }
     }
 
     if constexpr (with_table<table_type>::value) {
@@ -122,15 +85,6 @@ class minimal_window_search {
         }
       }
     }
-
-    // if (isHash && hash != 0) {
-    // 	if (!isMax) {
-    // 		tt_.updateLower(hash, bound - pts.first);
-    // 	}
-    // 	else {
-    // 		tt_.updateUpper(hash, bound - pts.first);
-    // 	}
-    // }
 
     return !game_.is_max();
   }
@@ -165,22 +119,20 @@ auto mws_binary_search(GameT g, LessT o = std::less<typename GameT::move_type>{}
   typename GameT::value_type start = 0, end = 120;
   auto mid = (start + end) / 2;
   bool larger = false;
-  typename GameT::move_type best_move_start, best_move_end;
+  typename GameT::move_type best_move;
   while ((end - start) > 1) {
     larger = mws.solve(mid);
     if (larger) {
       start = mid;
-      best_move_start = mws.best_move();
     } else {
       end = mid;
-      best_move_end = mws.best_move();
+      best_move = mws.best_move();
     }
 
     mid = (start + end) / 2;
     GOLV_LOG_DEBUG("start = " << start << " end = " << end);
   }
-  // return mid + 1;
-  return std::make_pair(end, best_move_end);  // todo: best move
+  return std::make_pair(end, best_move);  // todo: best move
 }
 
 }  // namespace golv

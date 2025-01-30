@@ -105,11 +105,18 @@ TEST_F(mws_bridge, skat_7cps_with_memory) {
   ASSERT_FALSE(upper);
 }
 
+struct order {
+  skat_card_order skat_order{suit::clubs};
+  bool operator()(const card& left, const card& right) {          //
+    return !operator==(left, right) && !skat_order(left, right);  //
+  }
+};
+
 TEST_F(mws_bridge, skat_8cps_with_mem) {
   auto game = create_random_skat_game(8, 2);
   GOLV_LOG_DEBUG("game = " << game);
 
-  auto [value, best_move] = mws_binary_search(game);
+  auto [value, best_move] = mws_binary_search<golv::skat, order>(game, order{});
 
   ASSERT_EQ(value, 32);
 }
@@ -118,7 +125,12 @@ TEST_F(mws_bridge, skat_10cps_with_mem) {
   auto game = default_skat_game_10();
   GOLV_LOG_DEBUG("game = " << game);
 
-  auto [value, best_move] = mws_binary_search(game);
+  auto actions = game.legal_actions();
+  std::sort(actions.begin(), actions.end(), order{});
+  GOLV_LOG_DEBUG("actions = " << actions);
+
+  auto [value, best_move] =  // mws_binary_search(game);
+      mws_binary_search<golv::skat, order>(game, order{});
   GOLV_LOG_DEBUG("best_move = " << best_move);
 
   ASSERT_EQ(value, 24);
@@ -129,7 +141,12 @@ TEST_F(mws_bridge, skat_10cps_with_mem_rot1) {
   auto game = default_skat_game_10(1);
   GOLV_LOG_DEBUG("game = " << game);
 
-  auto [value, bm] = mws_binary_search(game);
+  auto actions = game.legal_actions();
+  std::sort(actions.begin(), actions.end(), order{});
+  GOLV_LOG_DEBUG("actions = " << actions);
+
+  auto [value, bm] =  // mws_binary_search(game);
+      mws_binary_search<golv::skat, order>(game, order{});
   GOLV_LOG_DEBUG("value = " << value << ", bm = " << bm);
   ASSERT_EQ(value, 36);
 }
@@ -138,7 +155,12 @@ TEST_F(mws_bridge, skat_10cps_with_mem_rot2) {
   auto game = default_skat_game_10(2);
   GOLV_LOG_DEBUG("game = " << game);
 
-  auto [value, bm] = mws_binary_search(game);
+  auto actions = game.legal_actions();
+  std::sort(actions.begin(), actions.end(), order{});
+  GOLV_LOG_DEBUG("actions = " << actions);
+
+  auto [value, bm] =  // mws_binary_search(game);
+      mws_binary_search<golv::skat, order>(game, order{});
   GOLV_LOG_DEBUG("value = " << value << ", bm = " << bm);
   ASSERT_EQ(value, 27);
   ASSERT_EQ(bm, "As");

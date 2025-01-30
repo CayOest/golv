@@ -33,6 +33,7 @@ class skat {
   struct trick {
     std::vector<card> cards_;
     player_type leader_;
+    value_type eyes_{0};
   };
 
  private:
