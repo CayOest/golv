@@ -49,6 +49,7 @@ class skat {
   bool hash_me() const { return is_new_trick(); }
   move_range legal_actions() const;
   value_type value() const;
+  value_type step_value() const;
   bool is_max() const;
 
   void set_soloist(player_type soloist);
@@ -62,8 +63,11 @@ class skat {
   void deal(internal_state_type const& state);
   const std::vector<trick>& tricks() const;
 
+  friend std::ostream& operator<<(std::ostream& os, skat const& game);
+
  private:
   value_type value_{0};
+  value_type last_trick_value_{0};
 
   void next_player();
 };

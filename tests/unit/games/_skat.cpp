@@ -11,7 +11,8 @@ using namespace golv;
 
 TEST(skat, create_random) {
   skat game = create_random_skat_game(10);
-  GOLV_LOG_INFO("" << game.state());
+  GOLV_LOG_INFO("" << game);
+  ASSERT_EQ(game.value(), 10);
 }
 
 TEST(skat, legal) {
@@ -106,7 +107,7 @@ TEST(skat, trick_winner) {
   // new trick
   auto winner = tricks.back().leader_;
   ASSERT_EQ(winner, 2);
-  ASSERT_EQ(game.value(), 0);
+  ASSERT_EQ(game.value(), 10);
   moves = game.legal_actions();
   EXPECT_NO_THROW(game.apply_action(moves.front()));
   moves = game.legal_actions();
@@ -117,12 +118,14 @@ TEST(skat, trick_winner) {
   ASSERT_EQ(tricks.size(), 3);
   winner = tricks.back().leader_;
   ASSERT_EQ(winner, 0);
-  ASSERT_EQ(game.value(), 4);
+  ASSERT_EQ(game.value(), 14);
+  game.undo_action(moves.front());
+  ASSERT_EQ(game.value(), 10);
 }
 
 TEST(skat, trick_1) {
   golv::skat game = create_random_skat_game(7, 1);
-  GOLV_LOG_DEBUG("game = " << game.state());
+  GOLV_LOG_DEBUG("game = " << game);
   card Ad{kind::ace, suit::diamonds};
   game.apply_action(Ad);
   card Kd{kind::king, suit::diamonds};
@@ -133,11 +136,39 @@ TEST(skat, trick_1) {
   auto winner = game.tricks().back().leader_;
   ASSERT_EQ(winner, 0);
   auto value = game.value();
-  ASSERT_EQ(value, 25);
+  ASSERT_EQ(value, 36);
   ASSERT_TRUE(game.is_max());
   GOLV_LOG_DEBUG("game = " << game.state());
   game.undo_action(Td);
   GOLV_LOG_DEBUG("game = " << game.state());
   value = game.value();
-  ASSERT_EQ(value, 0);
+  ASSERT_EQ(value, 11);
+}
+
+TEST(skat, legal_1) {
+  golv::skat game = default_skat_game_10();
+  GOLV_LOG_DEBUG("game = " << game);
+  game.apply_action("Ac");
+  auto legal = game.legal_actions();
+  ASSERT_EQ(legal.size(), 2);
+  ASSERT_EQ(legal.front(), "8c");
+  ASSERT_EQ(legal.back(), "Tc");
+  game.apply_action("8c");
+  legal = game.legal_actions();
+  ASSERT_EQ(legal.size(), 2);
+  ASSERT_EQ(legal.front(), "Qc");
+  ASSERT_EQ(legal.back(), "Kc");
+}
+
+TEST(skat, legal_jack) {
+  golv::skat game = default_skat_game_10(1);
+  GOLV_LOG_DEBUG("game = " << game);
+  game.apply_action("Jh");
+  auto legal = game.legal_actions();
+  ASSERT_EQ(legal.size(), 2);
+  ASSERT_EQ(legal.front(), "Jd");
+  ASSERT_EQ(legal.back(), "Js");
+  game.apply_action("Jd");
+  legal = game.legal_actions();
+  ASSERT_EQ(legal.size(), 10);
 }

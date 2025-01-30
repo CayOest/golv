@@ -35,6 +35,32 @@ bool less_kind(kind left, kind right) {
   return static_cast<int>(left) > static_cast<int>(right);
 }
 
+skat::value_type count_eyes(hand const& cards) {
+  skat::value_type eyes = 0;
+  for (auto const& card : cards) {
+    switch (card.get_kind()) {
+      case kind::jack:
+        eyes += 2;
+        break;
+      case kind::ace:
+        eyes += 11;
+        break;
+      case kind::ten:
+        eyes += 10;
+        break;
+      case kind::king:
+        eyes += 4;
+        break;
+      case kind::queen:
+        eyes += 3;
+        break;
+      default:
+        break;
+    }
+  }
+  return eyes;
+}
+
 // todo: implement ordering for tens
 bool skat_card_order::operator()(card const& left, card const& right) const {
   if (left.get_kind() == kind::jack) {
@@ -72,15 +98,26 @@ skat::move_range skat::legal_actions() const {
   if (tricks_.empty() || tricks_.back().cards_.empty()) {
     legal = cards;
   } else {
-    auto cmp = [](card const& left, card const& right) { return less_suit(left.get_suit(), right.get_suit()); };
-    auto rng = std::equal_range(cards.begin(), cards.end(), tricks_.back().cards_.front(),
-                                // todo: fix this for jacks
-                                cmp);
-
-    if (rng.first != rng.second) {
-      legal = move_range(rng.first, rng.second);
+    if (tricks_.back().cards_.front().get_kind() == kind::jack) {
+      auto it = std::find_if(cards.begin(), cards.end(), [](const card& c) { return c.get_kind() == kind::jack; });
+      if (it != cards.end()) {
+        legal = skat::move_range{it, cards.end()};
+      } else {
+        legal = cards;
+      }
     } else {
-      legal = cards;
+      auto lead_suit = tricks_.back().cards_.front().get_suit();
+      auto it = std::find_if(cards.begin(), cards.end(), [lead_suit](const card& c) {
+        return c.get_kind() != kind::jack && c.get_suit() == lead_suit;
+      });
+      if (it != cards.end()) {
+        auto it2 = std::find_if(it, cards.end(), [lead_suit](const card& c) {
+          return c.get_kind() == kind::jack || c.get_suit() != lead_suit;
+        });
+        legal = skat::move_range{it, it2};
+      } else {
+        legal = cards;
+      }
     }
   }
   GOLV_LOG_TRACE("legal_actions for player " << *current_player_ << ": " << legal);
@@ -132,6 +169,10 @@ void skat::apply_action(skat::move_type const& move) {
 
   if (tricks_.back().cards_.size() == num_players) {
     current_player_ = get_trick_winner();
+    if (*current_player_ == soloist_) {
+      value_ += count_eyes(tricks_.back().cards_);
+    }
+    // value_ += last_trick_value_;
     tricks_.push_back({{}, *current_player_});
   }
 }
@@ -154,6 +195,9 @@ void skat::undo_action(skat::move_type const& move) {
     if ((tricks_.end() - 2)->cards_.back() != move) {
       throw std::domain_error("Cannot undo action");
     }
+    if (tricks_.back().leader_ == soloist_) {
+      value_ -= count_eyes((tricks_.end() - 2)->cards_);
+    }
     tricks_.pop_back();
     tricks_.back().cards_.pop_back();
     current_player_ = tricks_.back().leader_;
@@ -164,38 +208,26 @@ void skat::undo_action(skat::move_type const& move) {
   }
 }
 
-skat::value_type count_eyes(skat::trick const& trick) {
-  skat::value_type eyes = 0;
-  for (auto const& card : trick.cards_) {
-    switch (card.get_kind()) {
-      case kind::jack:
-        eyes += 2;
-        break;
-      case kind::ace:
-        eyes += 11;
-        break;
-      case kind::ten:
-        eyes += 10;
-        break;
-      case kind::king:
-        eyes += 4;
-        break;
-      case kind::queen:
-        eyes += 4;
-        break;
-      default:
-        break;
-    }
-  }
-  return eyes;
-}
-
-skat::value_type skat::value() const {
+skat::value_type skat::step_value() const {
   if (!tricks_.empty() && tricks_.back().cards_.empty()) {
-    return tricks_.back().leader_ == soloist_ ? count_eyes(tricks_[tricks_.size() - 2]) : 0;
+    return tricks_.back().leader_ == soloist_ ? count_eyes(tricks_[tricks_.size() - 2].cards_) : 0;
   }
 
   return 0;
+}
+
+skat::value_type skat::value() const {
+  // value_type sum = count_eyes(state_[3]);
+  // for (size_t i = 1; i < tricks_.size(); ++i) {
+  //   if (tricks_[i].leader_ == soloist_) {
+  //     sum += count_eyes(tricks_[i - 1].cards_);
+  //   }
+  // }
+  // if (sum != value_) {
+  //   GOLV_LOG_ERROR("sum = " << sum << " - value_ = " << value_);
+  // }
+  // return sum;
+  return value_;
 }
 
 bool skat::is_terminal() const {
@@ -207,11 +239,26 @@ bool skat::is_terminal() const {
 
 bool skat::is_max() const { return *current_player_ == soloist_; }
 
-void skat::deal(internal_state_type const& state) { state_ = state; }
+void skat::deal(internal_state_type const& state) {
+  state_ = state;
+  value_ = count_eyes(state_[3]);
+}
 
 const std::vector<skat::trick>& skat::tricks() const { return tricks_; }
 
 skat::player_type skat::current_player() const { return *current_player_; }
 
 void skat::set_soloist(player_type soloist) { soloist_ = soloist; }
+
+std::ostream& operator<<(std::ostream& os, skat const& game) {
+  for (auto const& cards : game.state_) {
+    for (auto const& c : cards) {
+      os << to_string(c) << " ";
+    }
+    os << " | ";
+  }
+  os << *game.current_player_;
+  return os;
+}
+
 }  // namespace golv

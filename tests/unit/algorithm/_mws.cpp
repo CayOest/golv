@@ -8,8 +8,6 @@
 #include <golv/util/logging.hpp>
 #include <golv/util/test_utils.hpp>
 
-#include "../util/test_games.hpp"
-
 using namespace golv;
 
 class mws_f : public ::testing::Test {
@@ -166,56 +164,3 @@ TEST_F(mws_f, connectfour_3_mem) {
   auto [upper, not_best_move] = mws_with_memory(game, expected);
   ASSERT_FALSE(upper);
 }
-
-// TEST_F(mws_f, bridge_5cps) {
-//   auto game = default_game_5();
-//   GOLV_LOG_DEBUG("game = " << game.state());
-
-//   int first_guess = 7;
-//   auto solution = golv::mtd_f(game).solve(first_guess);
-//   GOLV_LOG_DEBUG("solution = " << solution);
-//   ASSERT_EQ(solution, 4);
-// }
-
-// TEST_F(mws_f, bridge_5cps_rot1_with_memory) {
-//   auto game = default_game_5(1);
-//   GOLV_LOG_DEBUG("game = " << game.state());
-
-//   int first_guess = 7;
-//   auto solution = golv::mtd_f(game).solve(first_guess);
-//   GOLV_LOG_DEBUG("solution = " << solution);
-//   ASSERT_EQ(solution, 5);
-// }
-
-// TEST_F(mws_f, bridge_5cps_1_with_memory) {
-//   auto game = default_game_5();
-//   game.set_soloist(1);
-//   GOLV_LOG_DEBUG("game = " << game.state());
-
-//   int first_guess = 7;
-//   auto solution = golv::mtd_f(game).solve(first_guess);
-//   GOLV_LOG_DEBUG("solution = " << solution);
-//   ASSERT_EQ(solution, 1);
-// }
-
-// TEST_F(mws_f, bridge_5cps_2_with_memory) {
-//   auto game = default_game_5();
-//   game.set_soloist(2);
-//   GOLV_LOG_DEBUG("game = " << game.state());
-
-//   int first_guess = 7;
-//   auto solution = golv::mtd_f(game).solve(first_guess);
-//   GOLV_LOG_DEBUG("solution = " << solution);
-//   ASSERT_EQ(solution, 4);
-// }
-
-// TEST_F(mws_f, bridge_5cps_3_with_memory) {
-//   auto game = default_game_5();
-//   game.set_soloist(3);
-//   GOLV_LOG_DEBUG("game = " << game.state());
-
-//   int first_guess = 7;
-//   auto solution = golv::mtd_f(game).solve(first_guess);
-//   GOLV_LOG_DEBUG("solution = " << solution);
-//   ASSERT_EQ(solution, 1);
-// }

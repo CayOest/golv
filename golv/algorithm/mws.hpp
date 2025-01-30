@@ -1,6 +1,7 @@
 #include <golv/algorithm/move_ordering.hpp>
 #include <golv/algorithm/mws_unordered_table.hpp>
 #include <golv/traits/game.hpp>
+#include <golv/util/logging.hpp>
 
 namespace golv {
 template <Game GameT, typename MoveOrderingT = no_ordering, TranspositionTable<GameT> TableT = no_table<GameT>>
@@ -21,11 +22,15 @@ class minimal_window_search {
   bool solve(value_type bound) { return _solve(bound); }
 
   bool _solve(value_type bound, int depth = 0) {
-    // if (value > bound) return true;
     auto value = game_.value();
+#if 0
+    if (value > bound) return true;
+#else
     if (game_.is_terminal()) {
       return value > bound;
     }
+#endif
+
     // auto pts = game_.counts();
     // if (pts.first > bound) return true;
     // else if (pts.second >= totalEyes_ - bound) return false;
@@ -57,6 +62,12 @@ class minimal_window_search {
     // 	}
     // }
     auto legal_actions = game_.legal_actions();
+    // if (depth == 0) {
+    //   GOLV_LOG_DEBUG("legal_actions = ");
+    //   for (auto const& a : legal_actions) {
+    //     GOLV_LOG_DEBUG(a);
+    //   }
+    // }
 
     if constexpr (with_ordering<move_ordering_type>::value) {
       std::sort(std::begin(legal_actions), std::end(legal_actions), move_ordering_);
@@ -144,6 +155,32 @@ auto mws_with_memory(GameT g, typename GameT::value_type test_value, LessT o = s
   minimal_window_search mws(g, o, mws_unordered_table<GameT>{});
   auto solution = mws.solve(test_value);
   return std::make_pair(solution, mws.best_move());
+}
+
+template <Game GameT, typename LessT = std::less<typename GameT::move_type>>
+auto mws_binary_search(GameT g, LessT o = std::less<typename GameT::move_type>{}) {
+  mws_unordered_table<GameT> table{};
+  minimal_window_search mws(g, o, table);
+
+  typename GameT::value_type start = 0, end = 120;
+  auto mid = (start + end) / 2;
+  bool larger = false;
+  typename GameT::move_type best_move_start, best_move_end;
+  while ((end - start) > 1) {
+    larger = mws.solve(mid);
+    if (larger) {
+      start = mid;
+      best_move_start = mws.best_move();
+    } else {
+      end = mid;
+      best_move_end = mws.best_move();
+    }
+
+    mid = (start + end) / 2;
+    GOLV_LOG_DEBUG("start = " << start << " end = " << end);
+  }
+  // return mid + 1;
+  return std::make_pair(end, best_move_end);  // todo: best move
 }
 
 }  // namespace golv

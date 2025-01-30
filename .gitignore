@@ -29,3 +29,9 @@
 
 /*build*/**
 /.cache/**
+/_deps/**
+/**/*.cmake
+/**/Makefile
+/**/*.make
+/**/CMakeFiles/**
+/**/CMakeCache.txt
