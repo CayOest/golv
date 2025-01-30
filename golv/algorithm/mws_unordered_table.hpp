@@ -1,5 +1,7 @@
+#include <bitset>
 #include <golv/traits/game.hpp>
 #include <golv/traits/transposition_table.hpp>
+#include <golv/util/logging.hpp>
 #include <unordered_map>
 
 namespace golv {
@@ -20,38 +22,49 @@ struct mws_unordered_table {
     return game.hash_me();
   }
 
-  storage_type const& get(typename GameT::state_type const& state) const {
+  storage_type const& get(typename GameT::state_type const& state) {
     const static storage_type _invalid = {std::numeric_limits<typename GameT::value_type>::lowest(),  //
                                           std::numeric_limits<typename GameT::value_type>::max()};
     auto it = map_.find(state);
-    if (it != map_.end())
-      return it->second;
-    else
-      return _invalid;
+    if (it == map_.end()) {
+      it = map_.insert(it, {state, _invalid});
+    }
+    return it->second;
   }
 
-  constexpr void set(typename GameT::state_type const& state, storage_type type_value) {  //
+  void set(typename GameT::state_type const& state, storage_type type_value) {  //
     map_[state] = type_value;
   }
 
-  constexpr void update_lower(typename GameT::state_type const& state,  //
-                              typename GameT::value_type const& value) {
+  void update_lower(typename GameT::state_type const& state,  //
+                    typename GameT::value_type const& value) {
     auto it = map_.find(state);
-    if (it != map_.end()) {
-      it->second.first = std::max(value, it->second.first);
-    } else {
-      map_[state] = {value, std::numeric_limits<typename GameT::value_type>::max()};
+    if (it == map_.end()) {
+      it = map_.insert(it, {state, {value, std::numeric_limits<typename GameT::value_type>::max()}});
     }
+    it->second.first = std::max(value, it->second.first);
   }
 
-  constexpr void update_upper(typename GameT::state_type const& state,  //
-                              typename GameT::value_type const& value) {
+  void update_upper(typename GameT::state_type const& state,  //
+                    typename GameT::value_type const& value) {
     auto it = map_.find(state);
-    if (it != map_.end()) {
-      it->second.second = std::min(value, it->second.second);
-    } else {
-      map_[state] = {std::numeric_limits<typename GameT::value_type>::lowest(), value};
+    if (it == map_.end()) {
+      it = map_.insert(it, {state, {std::numeric_limits<typename GameT::value_type>::lowest(), value}});
     }
+    it->second.second = std::min(value, it->second.second);
+  }
+
+  void report() const {
+    GOLV_LOG_DEBUG("max_bucket_count = " << map_.max_bucket_count());
+    GOLV_LOG_DEBUG("load_factor = " << map_.load_factor());
+    GOLV_LOG_DEBUG("max_load_factor = " << map_.max_load_factor());
+    GOLV_LOG_DEBUG("bucket_count = " << map_.bucket_count());
+    GOLV_LOG_DEBUG("size = " << map_.size());
+    int collisions = 0;
+    for (size_t i = 0; i < map_.bucket_count(); ++i) {
+      if (map_.bucket_size(i) > 1) collisions += (map_.bucket_size(i) - 1);
+    }
+    GOLV_LOG_DEBUG("collisions = " << collisions);
   }
 };
 }  // namespace golv
