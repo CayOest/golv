@@ -36,20 +36,11 @@ class skat {
     value_type eyes_{0};
   };
 
- private:
-  internal_state_type state_;
-  cyclic_player_type current_player_ = 0;
-  player_type soloist_ = 0;
-  std::vector<trick> tricks_;
-
-  player_type get_trick_winner() const;
-
-  bool is_new_trick() const;
-
  public:
   bool hash_me() const { return is_new_trick(); }
   move_range legal_actions() const;
   value_type value() const;
+  value_type opp_value() const;
   value_type step_value() const;
   bool is_max() const;
 
@@ -68,9 +59,15 @@ class skat {
 
  private:
   value_type value_{0};
-  value_type last_trick_value_{0};
+  value_type opp_value_{0};
 
-  void next_player();
+  internal_state_type state_;
+  cyclic_player_type current_player_ = 0;
+  player_type soloist_ = 0;
+  std::vector<trick> tricks_;
+
+  player_type get_trick_winner() const;
+  bool is_new_trick() const;
 };
 
 } // namespace golv

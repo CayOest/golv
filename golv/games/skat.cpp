@@ -171,6 +171,8 @@ void skat::apply_action(skat::move_type const& move) {
     auto eyes = count_eyes(tricks_.back().cards_);
     if (*current_player_ == soloist_) {
       value_ += eyes;
+    } else {
+      opp_value_ += eyes;
     }
     tricks_.back().eyes_ = eyes;
     tricks_.push_back({{}, *current_player_, 0});
@@ -197,6 +199,8 @@ void skat::undo_action(skat::move_type const& move) {
     }
     if (tricks_.back().leader_ == soloist_) {
       value_ -= (tricks_.end() - 2)->eyes_;
+    } else {
+      opp_value_ -= (tricks_.end() - 2)->eyes_;
     }
     (tricks_.end() - 2)->eyes_ = 0;
     tricks_.pop_back();
@@ -218,6 +222,7 @@ skat::value_type skat::step_value() const {
 }
 
 skat::value_type skat::value() const { return value_; }
+skat::value_type skat::opp_value() const { return opp_value_; }
 
 bool skat::is_terminal() const {
   for (size_t i = 0; i < skat::num_players; ++i) {

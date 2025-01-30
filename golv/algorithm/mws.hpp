@@ -3,6 +3,19 @@
 #include <golv/traits/game.hpp>
 #include <golv/util/logging.hpp>
 
+template <class T>
+struct opp_value_wrapper : public T {
+  template <class U>
+  static auto check(U const& t) -> decltype(t.opp_value(), std::true_type());
+
+  static auto check(...) -> decltype(std::false_type());
+};
+
+template <class T>
+struct has_opp_value : decltype(opp_value_wrapper<T>::check(std::declval<opp_value_wrapper<T>>())){};
+
+// static_assert(std::experimental::is_detected_exact_v<float, has_purr, Cat>);
+
 namespace golv {
 template <Game GameT, typename MoveOrderingT = no_ordering, TranspositionTable<GameT> TableT = no_table<GameT>>
 class minimal_window_search {
@@ -24,6 +37,14 @@ class minimal_window_search {
   bool _solve(value_type bound, int depth = 0) {
     auto value = game_.value();
     if (value > bound) return true;
+    else {
+      if constexpr (has_opp_value<game_type>::value) {
+        if (game_.opp_value() >= 120 - bound) {
+          return false;
+        }
+      }
+    }
+
     if (game_.is_terminal()) {
       return value > bound;
     }
@@ -86,7 +107,7 @@ class minimal_window_search {
       }
     }
 
-    return !game_.is_max();
+      return !game_.is_max();
   }
 
   move_type best_move() const { return best_move_; }
