@@ -119,7 +119,7 @@ skat::move_range skat::legal_actions() const {
       }
     }
   }
-  GOLV_LOG_TRACE("legal_actions for player " << *current_player_ << ": " << legal);
+  // GOLV_LOG_TRACE("legal_actions for player " << *current_player_ << ": " << legal);
   return legal;
 }
 
@@ -127,11 +127,11 @@ skat::player_type skat::get_trick_winner() const {
   assert(!tricks_.empty());
   auto last_trick = tricks_.back().cards_;
   std::sort(std::begin(last_trick), std::end(last_trick), skat_card_order{last_trick.front().get_suit()});
-  GOLV_LOG_TRACE("Sorted trick: " << last_trick);
+  // GOLV_LOG_TRACE("Sorted trick: " << last_trick);
   auto it = std::find(std::begin(tricks_.back().cards_), std::end(tricks_.back().cards_), last_trick.back());
   assert(it != tricks_.back().cards_.end());
   skat::player_type winner = (tricks_.back().leader_ + (it - tricks_.back().cards_.begin())) % num_players;
-  GOLV_LOG_TRACE("Trick Winner = " << winner << " for trick " << tricks_.back().cards_);
+  // GOLV_LOG_TRACE("Trick Winner = " << winner << " for trick " << tricks_.back().cards_);
   return winner;
 }
 
@@ -153,9 +153,10 @@ skat::state_type skat::state() const {
 bool skat::is_new_trick() const { return !tricks_.empty() && tricks_.back().cards_.empty(); }
 
 void skat::apply_action(skat::move_type const& move) {
-  GOLV_LOG_TRACE("apply_action for player " << *current_player_ << ": " << move);
+  // GOLV_LOG_TRACE("apply_action for player " << *current_player_ << ": " << move);
   auto& cards = state_[*current_player_];
-  auto it = std::find(std::begin(cards), std::end(cards), move);
+  auto it = std::lower_bound(std::begin(cards), std::end(cards), move, skat_card_order{});
+  // auto it = std::find(std::begin(cards), std::end(cards), move);
   if (it == std::end(cards)) {
     throw std::domain_error("Card not in hand");
   }
@@ -188,10 +189,12 @@ void skat::undo_action(skat::move_type const& move) {
       throw std::domain_error("Cannot undo action");
     }
     --current_player_;
-    GOLV_LOG_TRACE("undo_action for player " << *current_player_ << ": " << move);
+    // GOLV_LOG_TRACE("undo_action for player " << *current_player_ << ": " << move);
     auto& cards = state_[*current_player_];
-    cards.push_back(move);
-    std::sort(cards.begin(), cards.end(), skat_card_order{});
+    cards.insert(std::upper_bound(cards.begin(), cards.end(), move, skat_card_order{}), move);
+
+    // cards.push_back(move);
+    // std::sort(cards.begin(), cards.end(), skat_card_order{});
     tricks_.back().cards_.pop_back();
   } else {
     if ((tricks_.end() - 2)->cards_.back() != move) {
@@ -207,7 +210,7 @@ void skat::undo_action(skat::move_type const& move) {
     tricks_.back().cards_.pop_back();
     current_player_ = tricks_.back().leader_;
     --current_player_;
-    GOLV_LOG_TRACE("undo_action for player " << *current_player_ << ": " << move);
+    // GOLV_LOG_TRACE("undo_action for player " << *current_player_ << ": " << move);
     state_[*current_player_].push_back(move);
     std::sort(state_[*current_player_].begin(), state_[*current_player_].end(), skat_card_order{});
   }

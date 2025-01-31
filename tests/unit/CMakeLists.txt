@@ -36,6 +36,7 @@ target_link_libraries(
   unit
   GTest::gtest_main
   golv
+  skatomat2
 )
 
 include(GoogleTest)

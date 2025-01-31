@@ -13,7 +13,7 @@ template <class T, class GameT>
 concept TranspositionTable = requires(T t) {
   typename T::storage_type;
 
-  { t.is_memorable(GameT()) } -> std::convertible_to<bool>;
+  // { t.is_memorable(GameT()) } -> std::convertible_to<bool>;
   { t.get(typename GameT::state_type()) } -> std::convertible_to<typename T::storage_type>;
   { t.set(typename GameT::state_type(), typename T::storage_type()) };
 };

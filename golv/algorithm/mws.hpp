@@ -71,9 +71,9 @@ class minimal_window_search {
 
     auto legal_actions = game_.legal_actions();
 
-    if constexpr (with_ordering<move_ordering_type>::value) {
-      std::sort(std::begin(legal_actions), std::end(legal_actions), move_ordering_);
-    }
+    // if constexpr (with_ordering<move_ordering_type>::value) {
+    //   std::sort(std::begin(legal_actions), std::end(legal_actions), move_ordering_);
+    // }
 
     for (auto a : legal_actions) {
       game_.apply_action(a);
