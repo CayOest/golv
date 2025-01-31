@@ -3,12 +3,11 @@
 #include <algorithm>
 #include <golv/algorithm/alphabeta.hpp>
 #include <golv/traits/game.hpp>
+#include <golv/traits/transposition_table.hpp>
 #include <iostream>
 #include <limits>
 #include <type_traits>
 #include <unordered_map>
-
-#include "transposition_table.hpp"
 
 namespace golv {
 

@@ -2,7 +2,7 @@
 
 #include <algorithm>
 #include <golv/algorithm/move_ordering.hpp>
-#include <golv/algorithm/transposition_table.hpp>
+#include <golv/algorithm/unordered_table.hpp>
 #include <golv/traits/game.hpp>
 #include <golv/util/logging.hpp>
 #include <iostream>
@@ -72,17 +72,18 @@ class alpha_beta
         }
 
         for (auto const& move : legal_actions) {
-            game_.apply_action(move);
-            value_type move_value = game_.value();
-            value_type value = move_value + _solve(a - move_value, b - move_value, depth + 1);
-            game_.undo_action(move);
+          value_type prev_value = game_.value();
+          game_.apply_action(move);
+          value_type move_value = game_.value() - prev_value;
+          value_type value = move_value + _solve(a - move_value, b - move_value, depth + 1);
+          game_.undo_action(move);
 
-            if (game_.is_max()) {
-              if (depth == 0 && value > opt) {
-                best_move_ = move;
-              }
-                opt = std::max(value, opt);
-                a = std::max(a, value);
+          if (game_.is_max()) {
+            if (depth == 0 && value > opt) {
+              best_move_ = move;
+            }
+            opt = std::max(value, opt);
+            a = std::max(a, value);
             } else {
               if (depth == 0 && value < opt) {
                 best_move_ = move;

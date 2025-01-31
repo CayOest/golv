@@ -45,8 +45,9 @@ class tictactoe
     bool is_max() const;
     value_type value();
     state_type state() const;
+    bool hash_me() const { return true; }
 
-  private:
+   private:
     player_type current_player_ = player_type::X;
     internal_state_type state_;
     value_type value_{ 0 };

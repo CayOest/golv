@@ -105,19 +105,19 @@ TEST(bridge, legal_actions)
   auto moves5 = game.legal_actions();
   ASSERT_EQ(moves5.size(), 12);
   game.apply_action(moves5.back());
-  ASSERT_EQ(game.value(), 0);
+  ASSERT_EQ(game.value(), 1);
   auto moves6 = game.legal_actions();
   ASSERT_EQ(moves6.size(), 4);
   game.apply_action(moves6.front());
-  ASSERT_EQ(game.value(), 0);
+  ASSERT_EQ(game.value(), 1);
   auto moves7 = game.legal_actions();
   ASSERT_EQ(moves7.size(), 3);
   game.apply_action(moves7.back());
-  ASSERT_EQ(game.value(), 0);
+  ASSERT_EQ(game.value(), 1);
   auto moves8 = game.legal_actions();
   ASSERT_EQ(moves8.size(), 1);
   game.apply_action(moves8.back());
-  ASSERT_EQ(game.value(), 1);
+  ASSERT_EQ(game.value(), 2);
   ASSERT_EQ(game.tricks().size(), 3);
   ASSERT_EQ(game.current_player(), 2);
 }

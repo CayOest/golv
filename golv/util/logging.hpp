@@ -67,12 +67,16 @@ void
 set_log_level(log_level lvl);
 }
 
+#ifndef NDEBUG
 #define _GOLV_LOG(lvl, msg)                                                                                            \
     do {                                                                                                               \
         std::stringstream ss;                                                                                          \
         ss << msg << std::endl;                                                                                        \
         golv::the_logger::instance().log(lvl, ss.str());                                                               \
     } while (false)
+#else
+#define _GOLV_LOG(lvl, msg) ;
+#endif
 
 #define GOLV_LOG_FATAL(msg) _GOLV_LOG(golv::log_level::fatal, msg)
 #define GOLV_LOG_ERROR(msg) _GOLV_LOG(golv::log_level::error, msg)

@@ -13,4 +13,4 @@ golv::bridge default_game_5(int rotation = 0);
 golv::bridge default_game_3();
 
 // game results from create_random_skat_game(10)
-golv::skat default_skat_game_10();
+golv::skat default_skat_game_10(int rotation = 0);

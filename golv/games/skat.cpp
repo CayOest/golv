@@ -35,7 +35,6 @@ bool less_kind(kind left, kind right) {
   return static_cast<int>(left) > static_cast<int>(right);
 }
 
-// todo: implement ordering for tens
 bool skat_card_order::operator()(card const& left, card const& right) const {
   if (left.get_kind() == kind::jack) {
     if (right.get_kind() == kind::jack) {
@@ -66,21 +65,58 @@ bool skat_card_order::operator()(card const& left, card const& right) const {
   }
 }
 
+skat::value_type count_eyes(hand const& cards) {
+  skat::value_type eyes = 0;
+  for (auto const& card : cards) {
+    switch (card.get_kind()) {
+      case kind::jack:
+        eyes += 2;
+        break;
+      case kind::ace:
+        eyes += 11;
+        break;
+      case kind::ten:
+        eyes += 10;
+        break;
+      case kind::king:
+        eyes += 4;
+        break;
+      case kind::queen:
+        eyes += 3;
+        break;
+      default:
+        break;
+    }
+  }
+  return eyes;
+}
+
 skat::move_range skat::legal_actions() const {
   skat::move_range legal;
   auto const& cards = state_[*current_player_];
   if (tricks_.empty() || tricks_.back().cards_.empty()) {
     legal = cards;
   } else {
-    auto cmp = [](card const& left, card const& right) { return less_suit(left.get_suit(), right.get_suit()); };
-    auto rng = std::equal_range(cards.begin(), cards.end(), tricks_.back().cards_.front(),
-                                // todo: fix this for jacks
-                                cmp);
-
-    if (rng.first != rng.second) {
-      legal = move_range(rng.first, rng.second);
+    if (tricks_.back().cards_.front().get_kind() == kind::jack) {
+      auto it = std::find_if(cards.begin(), cards.end(), [](const card& c) { return c.get_kind() == kind::jack; });
+      if (it != cards.end()) {
+        legal = skat::move_range{it, cards.end()};
+      } else {
+        legal = cards;
+      }
     } else {
-      legal = cards;
+      auto lead_suit = tricks_.back().cards_.front().get_suit();
+      auto it = std::find_if(cards.begin(), cards.end(), [lead_suit](const card& c) {
+        return c.get_kind() != kind::jack && c.get_suit() == lead_suit;
+      });
+      if (it != cards.end()) {
+        auto it2 = std::find_if(it, cards.end(), [lead_suit](const card& c) {
+          return c.get_kind() == kind::jack || c.get_suit() != lead_suit;
+        });
+        legal = skat::move_range{it, it2};
+      } else {
+        legal = cards;
+      }
     }
   }
   GOLV_LOG_TRACE("legal_actions for player " << *current_player_ << ": " << legal);
@@ -100,22 +136,21 @@ skat::player_type skat::get_trick_winner() const {
 }
 
 skat::state_type skat::state() const {
-  std::stringstream ss;
-  if (!tricks_.empty() && !tricks_.back().cards_.empty()) {
-    for (auto const& card : tricks_.back().cards_) {
-      ss << card;
+  skat::state_type bits = 0;
+  for (size_t i = 0; i < state_.size() - 1; ++i) {
+    for (auto const& c : state_[i]) {
+      bits |= c.code();
     }
-    ss << " --- ";
   }
-  for (auto const& cards : state_) {
-    for (auto const& card : cards) {
-      ss << card;
-    }
-    ss << " | ";
+  if (*current_player_ == 1) {
+    bits |= state_[3][0].code();
+  } else if (*current_player_ == 2) {
+    bits |= state_[3][1].code();
   }
-  ss << *current_player_;
-  return ss.str();
+  return bits;
 }
+
+bool skat::is_new_trick() const { return !tricks_.empty() && tricks_.back().cards_.empty(); }
 
 void skat::apply_action(skat::move_type const& move) {
   GOLV_LOG_TRACE("apply_action for player " << *current_player_ << ": " << move);
@@ -133,7 +168,14 @@ void skat::apply_action(skat::move_type const& move) {
 
   if (tricks_.back().cards_.size() == num_players) {
     current_player_ = get_trick_winner();
-    tricks_.push_back({{}, *current_player_});
+    auto eyes = count_eyes(tricks_.back().cards_);
+    if (*current_player_ == soloist_) {
+      value_ += eyes;
+    } else {
+      opp_value_ += eyes;
+    }
+    tricks_.back().eyes_ = eyes;
+    tricks_.push_back({{}, *current_player_, 0});
   }
 }
 
@@ -155,6 +197,12 @@ void skat::undo_action(skat::move_type const& move) {
     if ((tricks_.end() - 2)->cards_.back() != move) {
       throw std::domain_error("Cannot undo action");
     }
+    if (tricks_.back().leader_ == soloist_) {
+      value_ -= (tricks_.end() - 2)->eyes_;
+    } else {
+      opp_value_ -= (tricks_.end() - 2)->eyes_;
+    }
+    (tricks_.end() - 2)->eyes_ = 0;
     tricks_.pop_back();
     tricks_.back().cards_.pop_back();
     current_player_ = tricks_.back().leader_;
@@ -165,39 +213,16 @@ void skat::undo_action(skat::move_type const& move) {
   }
 }
 
-skat::value_type count_eyes(skat::trick const& trick) {
-  skat::value_type eyes = 0;
-  for (auto const& card : trick.cards_) {
-    switch (card.get_kind()) {
-      case kind::jack:
-        eyes += 2;
-        break;
-      case kind::ace:
-        eyes += 11;
-        break;
-      case kind::ten:
-        eyes += 10;
-        break;
-      case kind::king:
-        eyes += 4;
-        break;
-      case kind::queen:
-        eyes += 4;
-        break;
-      default:
-        break;
-    }
-  }
-  return eyes;
-}
-
-skat::value_type skat::value() const {
+skat::value_type skat::step_value() const {
   if (!tricks_.empty() && tricks_.back().cards_.empty()) {
-    return tricks_.back().leader_ == soloist_ ? count_eyes(tricks_[tricks_.size() - 2]) : 0;
+    return tricks_.back().leader_ == soloist_ ? count_eyes(tricks_[tricks_.size() - 2].cards_) : 0;
   }
 
   return 0;
 }
+
+skat::value_type skat::value() const { return value_; }
+skat::value_type skat::opp_value() const { return opp_value_; }
 
 bool skat::is_terminal() const {
   for (size_t i = 0; i < skat::num_players; ++i) {
@@ -208,13 +233,26 @@ bool skat::is_terminal() const {
 
 bool skat::is_max() const { return *current_player_ == soloist_; }
 
-bool skat::is_new_trick() const { return !tricks_.empty() && tricks_.back().cards_.empty(); }
-
-void skat::deal(internal_state_type const& state) { state_ = state; }
+void skat::deal(internal_state_type const& state) {
+  state_ = state;
+  value_ = count_eyes(state_[3]);
+}
 
 const std::vector<skat::trick>& skat::tricks() const { return tricks_; }
 
 skat::player_type skat::current_player() const { return *current_player_; }
 
 void skat::set_soloist(player_type soloist) { soloist_ = soloist; }
+
+std::ostream& operator<<(std::ostream& os, skat const& game) {
+  for (auto const& cards : game.state_) {
+    for (auto const& c : cards) {
+      os << to_string(c) << " ";
+    }
+    os << " | ";
+  }
+  os << *game.current_player_;
+  return os;
+}
+
 }  // namespace golv

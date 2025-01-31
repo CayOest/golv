@@ -9,7 +9,7 @@ concept Game = requires(GameT g) {
                    typename GameT::player_type;
                    typename GameT::value_type;
                    typename GameT::state_type;
-
+                   { g.hash_me() } -> std::convertible_to<bool>;
                    {
                        g.legal_actions()
                        } -> std::convertible_to<typename GameT::move_range>;

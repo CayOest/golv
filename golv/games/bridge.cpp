@@ -126,12 +126,20 @@ bridge::undo_action(bridge::move_type const& move)
 bridge::value_type
 bridge::value() const
 {
+  int soloist = soloist_ % 2;
+#if 0
     if (!tricks_.empty() && tricks_.back().cards_.empty()) {
-        int soloist = soloist_ % 2;
         return (tricks_.back().leader_ % 2) == soloist ? 1 : 0;
     }
 
     return 0;
+#else
+  bridge::value_type sum = 0;
+  for (size_t i = 1; i < tricks_.size(); ++i) {
+    if (tricks_[i].leader_ % 2 == soloist) ++sum;
+  }
+  return sum;
+#endif
 }
 
 bool

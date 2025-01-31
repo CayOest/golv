@@ -24,6 +24,7 @@ public:
   using state_type = std::string;
 
   connectfour();
+  bool hash_me() const { return true; }
 
   player_type current_player() const { return current_player_; }
   move_range legal_actions() const;

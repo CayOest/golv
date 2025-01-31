@@ -66,7 +66,7 @@ bridge default_game_3() {
 }
 
 // game results from create_random_skat_game(10)
-golv::skat default_skat_game_10() {
+golv::skat default_skat_game_10(int rotation) {
   std::array<std::string, 4> card_strings = {
       //
       "9dTd8h9hTh9sKs7c9cAc",  //
@@ -81,6 +81,8 @@ golv::skat default_skat_game_10() {
     }
   }
   cards[3].push_back(card(card_strings[3].substr(0, 2).c_str()));
+  cards[3].push_back(card(card_strings[3].substr(2, 4).c_str()));
+  std::rotate(cards.begin(), cards.begin() + rotation, cards.begin() + skat::num_players);
   skat game;
   game.deal(cards);
   return game;

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <array>
-#include <cstdint>
+#include <bitset>
 #include <ostream>
 #include <vector>
 
@@ -33,18 +33,20 @@ enum class kind
 };
 
 class card {
+ public:
+  using code_type = std::bitset<64>;
+
+  card() = default;
+  card(const char* c);
+  card(kind k, suit s);
+  kind get_kind() const { return kind_; }
+  suit get_suit() const { return suit_; }
+  code_type code() const { return code_; }
+
  private:
   kind kind_;
   suit suit_;
-  uint64_t code_ = 0;
-
- public:
-  card(const char* c);
-  card(kind k, suit s);
-  card() = default;
-  kind get_kind() const { return kind_; }
-  suit get_suit() const { return suit_; }
-  uint64_t code() const { return code_; }
+  code_type code_ = 0;
 };
 
 std::string to_string(const card& c);

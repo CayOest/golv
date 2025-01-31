@@ -48,9 +48,9 @@ class bridge
     player_type get_trick_winner() const;
 
   public:
-   virtual move_range legal_actions() const;
-   virtual value_type value() const;
-   virtual bool is_max() const;
+   move_range legal_actions() const;
+   value_type value() const;
+   bool is_max() const;
 
    void set_soloist(player_type soloist);
 
@@ -63,6 +63,7 @@ class bridge
    state_type state() const;
    void deal(internal_state_type const& state);
    const std::vector<trick>& tricks() const;
+   bool hash_me() const { return is_new_trick() && is_max(); }
 
   private:
     value_type value_{ 0 };

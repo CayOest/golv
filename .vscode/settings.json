@@ -88,6 +88,9 @@
         "streambuf": "cpp",
         "thread": "cpp",
         "typeinfo": "cpp",
-        "variant": "cpp"
+        "variant": "cpp",
+        "bitset": "cpp",
+        "cinttypes": "cpp",
+        "shared_mutex": "cpp"
     }
 }

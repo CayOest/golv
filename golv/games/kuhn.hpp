@@ -82,6 +82,8 @@ class kuhn {
     current_player_ = (current_player_ + 1) % 2;
   }
 
+  bool hash_me() const { return true; }
+
   void set_max(int player) { max_player_ = player; }
 
   void reset() {
