@@ -26,7 +26,7 @@ TEST_F(mws_bridge, bridge_5cps) {
   ASSERT_FALSE(upper);
 }
 
-TEST_F(mws_bridge, bridge_5cps_with_mem) {
+TEST_F(mws_bridge, bridge_5cards_with_mem) {
   auto game = default_game_5();
   GOLV_LOG_DEBUG("game = " << game.state());
 
@@ -37,7 +37,7 @@ TEST_F(mws_bridge, bridge_5cps_with_mem) {
   ASSERT_FALSE(upper);
 }
 
-TEST_F(mws_bridge, bridge_5cps_rot1) {
+TEST_F(mws_bridge, bridge_5cards_rot1) {
   auto game = default_game_5(1);
   GOLV_LOG_DEBUG("game = " << game.state());
 
@@ -48,7 +48,7 @@ TEST_F(mws_bridge, bridge_5cps_rot1) {
   ASSERT_FALSE(upper);
 }
 
-TEST_F(mws_bridge, bridge_5cps_rot1_with_mem) {
+TEST_F(mws_bridge, bridge_5cards_rot1_with_mem) {
   auto game = default_game_5(1);
   GOLV_LOG_DEBUG("game = " << game.state());
 
@@ -59,7 +59,7 @@ TEST_F(mws_bridge, bridge_5cps_rot1_with_mem) {
   ASSERT_FALSE(upper);
 }
 
-TEST_F(mws_bridge, bridge_5cps_solo1) {
+TEST_F(mws_bridge, bridge_5cards_solo1) {
   auto game = default_game_5();
   game.set_soloist(1);
   GOLV_LOG_DEBUG("game = " << game.state());
@@ -71,7 +71,7 @@ TEST_F(mws_bridge, bridge_5cps_solo1) {
   ASSERT_FALSE(upper);
 }
 
-TEST_F(mws_bridge, bridge_5cps_solo1_with_mem) {
+TEST_F(mws_bridge, bridge_5cards_solo1_with_mem) {
   auto game = default_game_5();
   game.set_soloist(1);
   GOLV_LOG_DEBUG("game = " << game.state());
@@ -83,7 +83,7 @@ TEST_F(mws_bridge, bridge_5cps_solo1_with_mem) {
   ASSERT_FALSE(upper);
 }
 
-TEST_F(mws_bridge, bridge_7cps_with_memory) {
+TEST_F(mws_bridge, bridge_7cards_with_memory) {
   auto game = create_random_game(7);
   GOLV_LOG_DEBUG("game = " << game.state());
 
@@ -94,7 +94,27 @@ TEST_F(mws_bridge, bridge_7cps_with_memory) {
   ASSERT_FALSE(upper);
 }
 
-TEST_F(mws_bridge, skat_7cps_with_memory) {
+#ifdef NDEBUG
+
+TEST_F(mws_bridge, bridge_9cards_binary) {
+  auto game = create_random_game(9);
+  GOLV_LOG_DEBUG("game = " << game.state());
+
+  auto [value, best_move] = mws_binary_search(game);
+  ASSERT_EQ(value, 9);
+}
+
+TEST_F(mws_bridge, bridge_13cards_binary) {
+  auto game = create_random_game(13);
+  GOLV_LOG_DEBUG("game = " << game.state());
+
+  auto [value, best_move] = mws_binary_search(game);
+  ASSERT_EQ(value, 9);
+}
+
+#endif
+
+TEST_F(mws_bridge, skat_7cards_with_memory) {
   auto game = create_random_skat_game(7, 1);
   GOLV_LOG_DEBUG("game = " << game);
 
@@ -112,7 +132,7 @@ struct order {
   }
 };
 
-TEST_F(mws_bridge, skat_8cps_with_mem) {
+TEST_F(mws_bridge, skat_8cards_with_mem) {
   auto game = create_random_skat_game(8, 2);
   GOLV_LOG_DEBUG("game = " << game);
 
@@ -121,7 +141,7 @@ TEST_F(mws_bridge, skat_8cps_with_mem) {
   ASSERT_EQ(value, 32);
 }
 
-TEST_F(mws_bridge, skat_10cps_with_mem) {
+TEST_F(mws_bridge, skat_10cards_with_mem) {
   auto game = default_skat_game_10();
   GOLV_LOG_DEBUG("game = " << game);
 
@@ -137,7 +157,7 @@ TEST_F(mws_bridge, skat_10cps_with_mem) {
   ASSERT_EQ(best_move, "Ac");
 }
 
-TEST_F(mws_bridge, skat_10cps_with_mem_rot1) {
+TEST_F(mws_bridge, skat_10cards_with_mem_rot1) {
   auto game = default_skat_game_10(1);
   GOLV_LOG_DEBUG("game = " << game);
 
@@ -151,7 +171,7 @@ TEST_F(mws_bridge, skat_10cps_with_mem_rot1) {
   ASSERT_EQ(value, 36);
 }
 
-TEST_F(mws_bridge, skat_10cps_with_mem_rot2) {
+TEST_F(mws_bridge, skat_10cards_with_mem_rot2) {
   auto game = default_skat_game_10(2);
   GOLV_LOG_DEBUG("game = " << game);
 
