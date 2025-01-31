@@ -1,5 +1,5 @@
-#include <golv/algorithm/move_ordering.hpp>
-#include <golv/algorithm/mws_unordered_table.hpp>
+#include <golv/algorithms/move_ordering.hpp>
+#include <golv/algorithms/mws_unordered_table.hpp>
 #include <golv/traits/game.hpp>
 #include <golv/util/logging.hpp>
 
@@ -36,7 +36,8 @@ class minimal_window_search {
 
   bool _solve(value_type bound, int depth = 0) {
     auto value = game_.value();
-    if (value > bound) return true;
+    if (value > bound)
+      return true;
     else {
       if constexpr (has_opp_value<game_type>::value) {
         if (game_.opp_value() >= 120 - bound) {
@@ -99,7 +100,7 @@ class minimal_window_search {
       }
     }
 
-      return !game_.is_max();
+    return !game_.is_max();
   }
 
   move_type best_move() const { return best_move_; }

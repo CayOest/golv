@@ -1,4 +1,4 @@
-#include <golv/algorithm/utility.hpp>
+#include <golv/algorithms/utility.hpp>
 #include <golv/games/connectfour.hpp>
 
 namespace golv {

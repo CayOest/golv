@@ -1,7 +1,7 @@
 #pragma once
 
 #include <algorithm>
-#include <golv/algorithm/alphabeta.hpp>
+#include <golv/algorithms/alphabeta.hpp>
 #include <golv/traits/game.hpp>
 #include <golv/traits/transposition_table.hpp>
 #include <iostream>
@@ -11,23 +11,20 @@
 
 namespace golv {
 
-template <Game GameT, typename MoveOrderingT = no_ordering,
-          TranspositionTable<GameT> TableT = no_table<GameT>>
+template <Game GameT, typename MoveOrderingT = no_ordering, TranspositionTable<GameT> TableT = no_table<GameT>>
 class mtd_f {
-public:
+ public:
   using game_type = GameT;
   using value_type = typename game_type::value_type;
   using move_type = typename game_type::move_type;
 
-  constexpr static value_type min_value =
-      std::numeric_limits<value_type>::lowest();
-  constexpr static value_type max_value =
-      std::numeric_limits<value_type>::max();
+  constexpr static value_type min_value = std::numeric_limits<value_type>::lowest();
+  constexpr static value_type max_value = std::numeric_limits<value_type>::max();
 
-private:
+ private:
   game_type game_;
 
-public:
+ public:
   mtd_f(GameT game) : game_(game) {}
 
   value_type solve(value_type first_guess, value_type lower_bound = min_value, value_type upper_bound = max_value) {
@@ -51,4 +48,4 @@ public:
   }
 };
 
-} // namespace golv
+}  // namespace golv

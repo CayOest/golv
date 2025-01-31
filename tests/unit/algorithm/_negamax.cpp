@@ -1,8 +1,8 @@
-#include <algorithm>
-#include <functional>
 #include <gtest/gtest.h>
 
-#include <golv/algorithm/negamax.hpp>
+#include <algorithm>
+#include <functional>
+#include <golv/algorithms/negamax.hpp>
 #include <golv/games/connectfour.hpp>
 #include <golv/games/tictactoe.hpp>
 

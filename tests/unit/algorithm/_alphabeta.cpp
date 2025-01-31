@@ -2,7 +2,7 @@
 
 #include <algorithm>
 #include <functional>
-#include <golv/algorithm/alphabeta.hpp>
+#include <golv/algorithms/alphabeta.hpp>
 #include <golv/games/bridge.hpp>
 #include <golv/games/connectfour.hpp>
 #include <golv/games/skat.hpp>

@@ -2,7 +2,7 @@
 
 #include <algorithm>
 #include <functional>
-#include <golv/algorithm/cfr.hpp>
+#include <golv/algorithms/cfr.hpp>
 #include <golv/games/kuhn.hpp>
 #include <golv/games/rps.hpp>
 #include <golv/util/logging.hpp>

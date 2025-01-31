@@ -2,7 +2,7 @@
 
 #include <algorithm>
 #include <functional>
-#include <golv/algorithm/mws.hpp>
+#include <golv/algorithms/mws.hpp>
 #include <golv/util/logging.hpp>
 #include <golv/util/test_utils.hpp>
 

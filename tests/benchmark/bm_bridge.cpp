@@ -1,6 +1,6 @@
 #include <chrono>
-#include <golv/algorithm/alphabeta.hpp>
-#include <golv/algorithm/mtd_f.hpp>
+#include <golv/algorithms/alphabeta.hpp>
+#include <golv/algorithms/mtd_f.hpp>
 #include <golv/util/test_utils.hpp>
 #include <iomanip>
 #include <iostream>

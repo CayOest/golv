@@ -2,7 +2,7 @@
 
 #include <algorithm>
 #include <functional>
-#include <golv/algorithm/mtd_f.hpp>
+#include <golv/algorithms/mtd_f.hpp>
 #include <golv/games/connectfour.hpp>
 #include <golv/games/tictactoe.hpp>
 #include <golv/util/test_utils.hpp>
