@@ -49,14 +49,6 @@ class minimal_window_search {
       return value > bound;
     }
 
-    // auto pts = game_.counts();
-    // if (pts.first > bound) return true;
-    // else if (pts.second >= totalEyes_ - bound) return false;
-
-    // bool isMax = game_.currentIsSingle();
-    // bool isHash = game_.currentIsLead();
-
-    // uint64_t hash = 0;
     if constexpr (with_table<table_type>::value) {
       if (table_.is_memorable(game_)) {
         auto lookup = table_.get(game_.state());

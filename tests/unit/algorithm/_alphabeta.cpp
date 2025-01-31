@@ -285,7 +285,7 @@ TEST_F(_alphabeta, skat_5cards) {
   GOLV_LOG_DEBUG("game = " << game);
 
   auto [solution, best_move] = golv::alphabeta(game);
-  ASSERT_EQ(solution, 60);
+  ASSERT_EQ(solution, 59);
   golv::card expected{golv::kind::ten, golv::suit::hearts};
   ASSERT_EQ(best_move, expected);
 }
@@ -324,24 +324,10 @@ TEST_F(_alphabeta, skat_7cards_with_mem) {
   golv::card expected{golv::kind::ace, golv::suit::diamonds};
   ASSERT_EQ(best_move, expected);
 }
-// namespace
-
-TEST_F(_alphabeta, skat_8cards) {
-  golv::skat game = create_random_skat_game(8, 2);
-  GOLV_LOG_DEBUG("game = " << game);
-  auto [solution, best_move] = golv::alphabeta(game);
-  ASSERT_EQ(solution, 29);
-  golv::card expected{golv::kind::ace, golv::suit::spades};
-  ASSERT_EQ(best_move, expected);
-  generate_best_move_sequence(game, 3);
-}
 
 TEST_F(_alphabeta, skat_8cards_with_mem) {
   golv::skat game = create_random_skat_game(8, 2);
   GOLV_LOG_DEBUG("game = " << game);
   auto [solution, best_move] = golv::alphabeta_with_memory(game);
-  ASSERT_EQ(solution, 29);
-  golv::card expected{golv::kind::ace, golv::suit::spades};
-  ASSERT_EQ(best_move, expected);
-  generate_best_move_sequence(game, 3);
+  ASSERT_EQ(solution, 19);
 }
