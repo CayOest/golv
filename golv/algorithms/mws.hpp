@@ -18,10 +18,9 @@ struct opp_value_wrapper : public T {
 template <class T>
 struct has_opp_value : decltype(opp_value_wrapper<T>::check(std::declval<opp_value_wrapper<T>>())){};
 
-// static_assert(std::experimental::is_detected_exact_v<float, has_purr, Cat>);
-
 namespace golv {
-template <Game GameT, typename MoveOrderingT = no_ordering, TranspositionTable<GameT> TableT = no_table<GameT>>
+template <Game GameT, TranspositionTable<GameT> TableT = no_table<GameT>,
+          typename MoveOrderingT = no_ordering>
 class minimal_window_search {
  public:
   using game_type = GameT;
@@ -33,7 +32,8 @@ class minimal_window_search {
   constexpr static value_type min_value = std::numeric_limits<value_type>::lowest() / 2;
   constexpr static value_type max_value = std::numeric_limits<value_type>::max() / 2;
 
-  minimal_window_search(GameT game, MoveOrderingT move_ordering = no_ordering{}, TableT table = no_table<game_type>{})
+  minimal_window_search(GameT game, TableT table = no_table<game_type>{},
+                        MoveOrderingT move_ordering = no_ordering{})
       : game_(game), move_ordering_(move_ordering), table_(table) {}
 
   bool solve(value_type bound) { return _solve(bound); }
@@ -115,16 +115,18 @@ class minimal_window_search {
   move_type best_move_;
 };
 
-template <Game GameT, typename LessT = no_ordering, typename LookupT = no_table<GameT>>
-auto mws(GameT g, typename GameT::value_type test_value, LessT o = no_ordering{}, LookupT l = no_table<GameT>{}) {
-  minimal_window_search mws(g, o, l);
+template <Game GameT, typename LessT = no_ordering,
+          typename LookupT = no_table<GameT>>
+auto mws(GameT g, typename GameT::value_type test_value,
+         LookupT l = no_table<GameT>{}, LessT o = no_ordering{}) {
+  minimal_window_search mws(g, l, o);
   auto solution = mws.solve(test_value);
   return std::make_pair(solution, mws.best_move());
 }
 
 template <Game GameT, typename LessT = std::less<typename GameT::move_type>>
 auto mws_with_memory(GameT g, typename GameT::value_type test_value, LessT o = std::less<typename GameT::move_type>{}) {
-  minimal_window_search mws(g, o, mws_unordered_table<GameT>{});
+  minimal_window_search mws(g, mws_unordered_table<GameT>{}, o);
   auto solution = mws.solve(test_value);
   return std::make_pair(solution, mws.best_move());
 }
@@ -132,7 +134,7 @@ auto mws_with_memory(GameT g, typename GameT::value_type test_value, LessT o = s
 template <Game GameT, typename LessT = std::less<typename GameT::move_type>>
 auto mws_binary_search(GameT g, LessT o = std::less<typename GameT::move_type>{}) {
   mws_unordered_table<GameT> table{};
-  minimal_window_search mws(g, o, table);
+  minimal_window_search mws(g, table, o);
 
   typename GameT::value_type start = 0, end = 120;
   auto mid = (start + end) / 2;
