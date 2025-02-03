@@ -4,6 +4,9 @@ project(golv)
 
 cmake_policy(SET CMP0135 NEW)
 
+option(ENABLE_TESTS "Enable GoogleTest" ON)
+option(ENABLE_PYBIND "Enable pybind11" ON)
+
 if(LINUX)
     if(CMAKE_COMPILER_IS_GNUCXX)
         add_compile_options(-fconcepts-diagnostics-depth=3)
