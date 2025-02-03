@@ -150,4 +150,14 @@ bool operator<(const card& left, const card& right) {  //
 hand create_bridge_deck() { return create_deck<13>(); }
 hand create_skat_deck() { return create_deck<8>(); }
 
+hand to_hand(std::string str) {
+  str.erase(std::remove(str.begin(), str.end(), ' '), str.end());
+  assert(str.size() % 2 == 0);
+  hand hand;
+  for (size_t j = 0; j < str.size() / 2; ++j) {
+    hand.push_back(card(str.substr(j * 2, 2).c_str()));
+  }
+  return hand;
+}
+
 }  // namespace golv

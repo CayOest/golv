@@ -4,6 +4,8 @@
 #include <bitset>
 #include <ostream>
 #include <vector>
+#include <cassert>
+#include <algorithm>
 
 namespace golv {
 
@@ -57,7 +59,6 @@ std::ostream& operator<<(std::ostream& os, const card& c);
  * hand
  */
 using hand = std::vector<card>;
-using hand_range = std::pair<hand::const_iterator, hand::const_iterator>;
 std::ostream& operator<<(std::ostream& os, const hand& h);
 std::string to_string(const hand& h);
 
@@ -71,6 +72,8 @@ hand create_deck() {
   }
   return deck;
 }
+
+hand to_hand(std::string str);
 
 bool operator<(const card& left, const card& right);
 
