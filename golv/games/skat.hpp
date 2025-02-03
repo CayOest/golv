@@ -43,7 +43,6 @@ class skat {
   move_range legal_actions() const;
   value_type value() const;
   value_type opp_value() const;
-  value_type step_value() const;
   bool is_max() const;
 
   void set_soloist(player_type soloist);

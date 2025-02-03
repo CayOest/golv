@@ -213,14 +213,6 @@ void skat::undo_action(skat::move_type const& move) {
   }
 }
 
-skat::value_type skat::step_value() const {
-  if (!tricks_.empty() && tricks_.back().cards_.empty()) {
-    return tricks_.back().leader_ == soloist_ ? count_eyes(tricks_[tricks_.size() - 2].cards_) : 0;
-  }
-
-  return 0;
-}
-
 skat::value_type skat::value() const { return value_; }
 skat::value_type skat::opp_value() const { return opp_value_; }
 
@@ -236,6 +228,9 @@ bool skat::is_max() const { return *current_player_ == soloist_; }
 void skat::deal(internal_state_type const& state) {
   state_ = state;
   value_ = count_eyes(state_[3]);
+  for (int i = 0; i < 4; ++i) {
+    std::sort(state_[i].begin(), state_[i].end(), skat_card_order{});
+  }
 }
 
 const std::vector<skat::trick>& skat::tricks() const { return tricks_; }

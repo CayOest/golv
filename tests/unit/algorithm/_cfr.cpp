@@ -26,9 +26,11 @@ TEST(cfr, rps) {
   {
     auto initial_strat = map.at("").avg_strategy();
     GOLV_LOG_DEBUG("Initial strategy:");
+#ifndef NDEBUG
     for (auto const& s : initial_strat) {
       GOLV_LOG_DEBUG(s);
     }
+#endif
   }
 
   // 'p' state strategy check

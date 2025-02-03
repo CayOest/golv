@@ -52,9 +52,11 @@ void list_options(golv::skat g)
               << ". Soloist set to 0 = Forehand." << std::endl;
   }
   g.set_soloist(s);
+  std::cout << "Generating options" << std::endl;
   auto games = generate_games(g, s);
   std::vector<std::future<golv::skat::value_type>> futures;
   std::vector<golv::hand> options;
+  std::cout << "Calculating options" << std::endl;
   for (auto g : games) {
     options.push_back(g.internal_state()[3]);
     auto fun = [g]() { return golv::mws_binary_search<golv::skat>(g).first; };
@@ -76,6 +78,10 @@ void list_options(golv::skat g)
       [max_value](auto const& pr) { return pr.second != max_value; });
   for (auto it2 = values.begin(); it2 != it; ++it2) {
     std::cout << it2->first << std::endl;
+  }
+  std::cout << "All Push Options = " << std::endl;
+  for (auto const& pr : values) {
+    std::cout << pr.first << " : " << pr.second << std::endl;
   }
 }
 
@@ -138,17 +144,6 @@ void insert_hand()
   dist[2] = bh_cards;
   auto game = make_game(dist);
 
-  std::cout << "SOLOIST [0, 1, 2]" << std::endl;
-  std::string soloist;
-  std::getline(std::cin, soloist);
-  int s = 0;
-  try {
-    s = std::stoi(soloist);
-  } catch (std::exception const&) {
-    std::cout << "Error parsing soloist: " << soloist
-              << ". Soloist set to 0 = Forehand." << std::endl;
-  }
-  game.set_soloist(s);
   list_options(game);
 }
 
