@@ -5,7 +5,7 @@ skat/skat_solver.cpp
 )
 
 add_executable(skat_pusher
-skat/skat_push_optimizer.cpp
+skat/skat_pusher.cpp
 )
 
 target_include_directories(skat_solver PRIVATE ${CMAKE_SOURCE_DIR})
