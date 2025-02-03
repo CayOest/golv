@@ -17,5 +17,4 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_subdirectory(golv)
 add_subdirectory(tests)
-
-# add_subdirectory(examples)
+add_subdirectory(examples)

@@ -1,7 +1,11 @@
-#include <golv/algorithms/move_ordering.hpp>
-#include <golv/algorithms/mws_unordered_table.hpp>
+#pragma once
+
 #include <golv/traits/game.hpp>
+#include <golv/algorithms/mws_unordered_table.hpp>
+#include <golv/algorithms/move_ordering.hpp>
 #include <golv/util/logging.hpp>
+
+#include <algorithm>
 
 template <class T>
 struct opp_value_wrapper : public T {

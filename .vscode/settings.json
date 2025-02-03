@@ -91,6 +91,12 @@
         "variant": "cpp",
         "bitset": "cpp",
         "cinttypes": "cpp",
-        "shared_mutex": "cpp"
+        "shared_mutex": "cpp",
+        "csignal": "cpp",
+        "codecvt": "cpp",
+        "complex": "cpp",
+        "source_location": "cpp",
+        "ranges": "cpp",
+        "typeindex": "cpp"
     }
 }

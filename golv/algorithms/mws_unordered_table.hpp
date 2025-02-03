@@ -1,7 +1,10 @@
-#include <bitset>
+#pragma once
+
 #include <golv/traits/game.hpp>
 #include <golv/traits/transposition_table.hpp>
 #include <golv/util/logging.hpp>
+#include <limits>
+#include <bitset>
 #include <unordered_map>
 
 namespace golv {
@@ -23,8 +26,9 @@ struct mws_unordered_table {
   }
 
   storage_type const& get(typename GameT::state_type const& state) {
-    const static storage_type _invalid = {std::numeric_limits<typename GameT::value_type>::lowest(),  //
-                                          std::numeric_limits<typename GameT::value_type>::max()};
+    const static storage_type _invalid = std::make_pair(std::numeric_limits<typename GameT::value_type>::lowest(),  //
+                                                        std::numeric_limits<typename GameT::value_type>::max());
+
     auto it = map_.find(state);
     if (it == map_.end()) {
       it = map_.insert(it, {state, _invalid});

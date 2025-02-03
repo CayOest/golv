@@ -1,8 +1,8 @@
 #pragma once
 
-#include <array>
 #include <golv/games/cards.hpp>
 #include <golv/util/cyclic_number.hpp>
+#include <array>
 #include <string>
 
 namespace golv {
