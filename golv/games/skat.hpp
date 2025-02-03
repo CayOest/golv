@@ -38,6 +38,8 @@ class skat {
 
  public:
   bool hash_me() const { return is_new_trick(); }
+
+  internal_state_type internal_state() const { return state_; }
   move_range legal_actions() const;
   value_type value() const;
   value_type opp_value() const;

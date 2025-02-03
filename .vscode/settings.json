@@ -97,6 +97,7 @@
         "complex": "cpp",
         "source_location": "cpp",
         "ranges": "cpp",
-        "typeindex": "cpp"
+        "typeindex": "cpp",
+        "future": "cpp"
     }
 }
