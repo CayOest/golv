@@ -70,4 +70,5 @@ jobs:
 
     - name: Test
       working-directory: ${{ steps.strings.outputs.build-output-dir }}
-      run: ./${{steps.string.output.build-output-dir}}/tests/unit/unit
+      shell: bash
+      run: ./tests/unit/unit || ./tests/unit/unit.exe
