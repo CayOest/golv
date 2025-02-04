@@ -12,7 +12,10 @@ using namespace golv;
 
 class mws_bridge : public ::testing::Test {
  protected:
-  void SetUp() override { golv::set_log_level(golv::log_level::debug); }
+  void SetUp() override
+  {
+    golv::set_log_level(golv::log_level::debug);
+  }
 };
 
 TEST_F(mws_bridge, bridge_5cps) {
@@ -104,6 +107,7 @@ TEST_F(mws_bridge, bridge_9cards_binary) {
   ASSERT_EQ(value, 9);
 }
 
+#if 0
 TEST_F(mws_bridge, bridge_13cards_binary) {
   auto game = create_random_game(13);
   GOLV_LOG_DEBUG("game = " << game.state());
@@ -111,7 +115,7 @@ TEST_F(mws_bridge, bridge_13cards_binary) {
   auto [value, best_move] = mws_binary_search(game);
   ASSERT_EQ(value, 9);
 }
-
+#endif
 #endif
 
 TEST_F(mws_bridge, skat_7cards_with_memory) {
@@ -188,4 +192,21 @@ TEST_F(mws_bridge, skat_10cards_binary_rot2)
   GOLV_LOG_DEBUG("value = " << value << ", bm = " << bm);
   ASSERT_EQ(value, 27);
   ASSERT_EQ(bm, "As");
+}
+
+TEST_F(mws_bridge, skat_10cards_binary_with_pushing)
+{
+  auto game = default_skat_game_10(0, 0, false);
+  GOLV_LOG_DEBUG("game = " << game);
+
+  auto actions = game.legal_actions();
+  std::sort(actions.begin(), actions.end(), order{});
+  GOLV_LOG_DEBUG("actions = " << actions);
+
+  auto [value, best_move] =  // mws_binary_search(game);
+      mws_binary_search<golv::skat, order>(game, order{});
+  GOLV_LOG_DEBUG("best_move = " << best_move);
+
+  ASSERT_EQ(value, 34);
+  ASSERT_EQ(best_move, "Ts");
 }

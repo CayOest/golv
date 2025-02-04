@@ -66,7 +66,8 @@ bridge default_game_3() {
 }
 
 // game results from create_random_skat_game(10)
-golv::skat default_skat_game_10(int rotation, unsigned soloist)
+golv::skat default_skat_game_10(int rotation, unsigned soloist,
+                                bool skip_pushing)
 {
   std::array<std::string, 4> card_strings = {
       //
@@ -87,7 +88,8 @@ golv::skat default_skat_game_10(int rotation, unsigned soloist)
   skat game;
   game.deal(cards[0], cards[1], cards[2], cards[3]);
   game.set_soloist(soloist);
-  game.apply_action(cards[3].front());
-  game.apply_action(cards[3].back());
+  if (skip_pushing) {
+    game.skip_pushing();
+  }
   return game;
 }

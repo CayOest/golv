@@ -72,7 +72,7 @@ PYBIND11_MODULE(golv_skat, m)
   py::class_<skat>(m, "Skat")
       .def(py::init<>())  // Standardkonstruktor
       .def("hash_me", &skat::hash_me)
-      .def("internal_state", &skat::internal_state)
+      .def("blinds", &skat::blinds)
       .def("legal_actions", &skat::legal_actions)
       .def("value", &skat::value)
       .def("opp_value", &skat::opp_value)

@@ -45,7 +45,7 @@ void list_options(golv::skat g)
   std::vector<golv::hand> options;
   std::cout << "Calculating options" << std::endl;
   for (auto g : games) {
-    options.push_back(g.internal_state()[3]);
+    options.push_back(g.blinds());
     auto fun = [g]() { return golv::mws_binary_search<golv::skat>(g).first; };
     futures.push_back(std::async(std::launch::async, fun));
   }

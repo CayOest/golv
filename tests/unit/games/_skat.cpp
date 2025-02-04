@@ -32,7 +32,7 @@ TEST(skat, apply_action_invalid) {
   skat game = default_skat_game_10();
   auto moves = game.legal_actions();
   EXPECT_NO_THROW(game.apply_action(moves.front()));
-  EXPECT_THROW(game.apply_action(moves.front()), std::domain_error);
+  EXPECT_THROW(game.apply_action(moves.front()), golv::exception);
 }
 
 TEST(skat, undo_action) {

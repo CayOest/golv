@@ -1,7 +1,8 @@
 #pragma once
 
-#include <algorithm>
 #include <golv/util/logging.hpp>
+#include <golv/util/exception.hpp>
+#include <algorithm>
 #include <random>
 #include <stdexcept>
 #include <string>
@@ -68,7 +69,7 @@ class kuhn {
 
   void apply_action(move_type move) {
     if (legal_actions().find(move) == std::string::npos) {
-      throw std::domain_error("Invalid move: " + std::string(1, move));
+      throw golv::exception("Invalid move: " + std::string(1, move));
     }
     state_ += move;
     current_player_ = (current_player_ + 1) % 2;
@@ -76,7 +77,7 @@ class kuhn {
 
   void undo_action(move_type move) {
     if (state_.empty() || state_.back() != move) {
-      throw std::logic_error("Cannot undo move: " + std::string(1, move));
+      throw golv::exception("Cannot undo move: " + std::string(1, move));
     }
     state_.pop_back();
     current_player_ = (current_player_ + 1) % 2;
