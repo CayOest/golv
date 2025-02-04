@@ -94,7 +94,7 @@ TEST(kuhn_, undo_action) {
 TEST(kuhn_, invalid_action) {
   kuhn game;
   game.deal(0, 1);
-  EXPECT_THROW(game.apply_action('z'), std::domain_error);
+  EXPECT_THROW(game.apply_action('z'), golv::exception);
 }
 
 TEST(kuhn_, value_xx) {

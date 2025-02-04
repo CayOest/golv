@@ -7,31 +7,18 @@
 
 namespace {
 
-auto generate_games(golv::skat game, int soloist)
+auto generate_games(golv::skat game)
 {
   std::vector<golv::skat> games;
-  auto state = game.internal_state();
-  auto& cards = state[soloist];
-  std::copy(state[3].begin(), state[3].end(), std::back_inserter(cards));
-  std::vector<std::pair<golv::hand, golv::skat::value_type>> options;
-  for (size_t i = 0; i < cards.size() - 1; ++i) {
-    for (size_t j = i + 1; j < cards.size(); ++j) {
-      auto new_hand = cards;
-      new_hand.erase(std::remove_if(
-          new_hand.begin(), new_hand.end(), [&cards, i, j](auto c) {
-            return (c.get_kind() == cards[i].get_kind() &&
-                    c.get_suit() == cards[i].get_suit()) ||
-                   (c.get_kind() == cards[j].get_kind() &&
-                    c.get_suit() == cards[j].get_suit());
-          }));
-      golv::hand push = {cards[i], cards[j]};
-      auto game_push = game;
-      auto tmp_state = game_push.internal_state();
-      tmp_state[soloist] = new_hand;
-      tmp_state[3] = push;
-      game_push.deal(tmp_state);
-      games.push_back(game_push);
+  auto legal = game.legal_actions();
+  for (size_t i = 0; i < legal.size() - 1; ++i) {
+    game.apply_action(legal[i]);
+    for (size_t j = i + 1; j < legal.size(); ++j) {
+      game.apply_action(legal[j]);
+      games.push_back(game);
+      game.undo_action(legal[j]);
     }
+    game.undo_action(legal[i]);
   }
   return games;
 }
@@ -53,12 +40,12 @@ void list_options(golv::skat g)
   }
   g.set_soloist(s);
   std::cout << "Generating options" << std::endl;
-  auto games = generate_games(g, s);
+  auto games = generate_games(g);
   std::vector<std::future<golv::skat::value_type>> futures;
   std::vector<golv::hand> options;
   std::cout << "Calculating options" << std::endl;
   for (auto g : games) {
-    options.push_back(g.internal_state()[3]);
+    options.push_back(g.blinds());
     auto fun = [g]() { return golv::mws_binary_search<golv::skat>(g).first; };
     futures.push_back(std::async(std::launch::async, fun));
   }
@@ -107,11 +94,11 @@ golv::hand get_skat(std::array<golv::hand, 4> distribution)
   return deck;
 }
 
-golv::skat make_game(std::array<golv::hand, 4> distribution)
+golv::skat make_game(std::array<golv::hand, 4> dist)
 {
   golv::skat game;
-  distribution[3] = get_skat(distribution);
-  game.deal(distribution);
+  dist[3] = get_skat(dist);
+  game.deal(dist[0], dist[1], dist[2], dist[3]);
   return game;
 }
 

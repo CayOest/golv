@@ -44,10 +44,11 @@ golv::hand get_skat(std::array<golv::hand, 4> distribution) {
   return deck;
 }
 
-golv::skat make_game(std::array<golv::hand, 4> distribution) {
+golv::skat make_game(std::array<golv::hand, 4> dist)
+{
   golv::skat game;
-  distribution[3] = get_skat(distribution);
-  game.deal(distribution);
+  dist[3] = get_skat(dist);
+  game.deal(dist[0], dist[1], dist[2], dist[3]);
   return game;
 }
 
@@ -89,6 +90,10 @@ void insert_hand() {
     std::cout << "Error parsing soloist: " << soloist << ". Soloist set to 0 = Forehand." << std::endl;
   }
   game.set_soloist(s);
+  auto legal = game.legal_actions();
+  // pushing = playing hand effectively.
+  game.apply_action(legal.back());
+  game.apply_action(*(legal.end() - 2));
   walk_through_game(game);
 }
 

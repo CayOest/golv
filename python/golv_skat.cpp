@@ -72,7 +72,7 @@ PYBIND11_MODULE(golv_skat, m)
   py::class_<skat>(m, "Skat")
       .def(py::init<>())  // Standardkonstruktor
       .def("hash_me", &skat::hash_me)
-      .def("internal_state", &skat::internal_state)
+      .def("blinds", &skat::blinds)
       .def("legal_actions", &skat::legal_actions)
       .def("value", &skat::value)
       .def("opp_value", &skat::opp_value)
@@ -83,7 +83,13 @@ PYBIND11_MODULE(golv_skat, m)
       .def("undo_action", &skat::undo_action)
       .def("is_terminal", &skat::is_terminal)
       .def("state", &skat::state)
-      .def("deal", &skat::deal)
+      .def("deal", py::overload_cast<golv::hand const &>(&golv::skat::deal),
+           "Deal a full 32-card Skat deck")
+      .def("deal",
+           py::overload_cast<golv::hand const &, golv::hand const &,
+                             golv::hand const &, golv::hand const &>(
+               &golv::skat::deal),
+           "Deal specific hands to the players")
       .def("tricks", &skat::tricks)
       .def("__repr__", [](const skat &s) {
         std::ostringstream oss;
