@@ -51,6 +51,9 @@ golv::skat create_random_skat_game(size_t cards_per_player, int rotate, unsigned
   auto N = golv::skat::num_players * cards_per_player;
   cards[golv::skat::num_players] = {_deck[N], _deck[N + 1]};
   std::rotate(cards.begin(), cards.begin() + rotate, cards.begin() + skat::num_players);
-  game.deal(cards);
+  game.deal(cards[0], cards[1], cards[2], cards[3]);
+  game.set_soloist(0);
+  game.apply_action(cards[3].front());
+  game.apply_action(cards[3].back());
   return game;
 }

@@ -11,15 +11,13 @@ using namespace golv;
 
 TEST(skat, create_random) {
   skat game = create_random_skat_game(10);
-  GOLV_LOG_INFO("" << game);
   ASSERT_EQ(game.value(), 10);
 }
 
 TEST(skat, legal) {
-  skat game = default_skat_game_10();
-  GOLV_LOG_INFO("" << game.state());
-  auto current_player = game.current_player();
-  ASSERT_EQ(current_player, 0);
+  skat game = default_skat_game_10(0, 1);
+  GOLV_LOG_INFO("" << game);
+  ASSERT_EQ(game.current_player(), 0);
   auto moves = game.legal_actions();
   ASSERT_EQ(moves.size(), 10);
 }
@@ -48,18 +46,17 @@ TEST(skat, undo_action_invalid) {
   skat game = default_skat_game_10();
   auto moves = game.legal_actions();
   EXPECT_NO_THROW(game.apply_action(moves.front()));
-  EXPECT_THROW(game.undo_action(moves.back()), std::domain_error);
+  EXPECT_THROW(game.undo_action(moves.back()), golv::exception);
 }
 
 TEST(skat, legal_after_action) {
-  skat game = default_skat_game_10();
+  skat game = default_skat_game_10(0, 1);
+  ASSERT_EQ(game.current_player(), 0);
   auto moves = game.legal_actions();
-  EXPECT_NO_THROW(game.apply_action(moves.front()));
+  ASSERT_EQ(moves.size(), 10);
+  game.apply_action(moves.back());
   moves = game.legal_actions();
-  ASSERT_EQ(moves.size(), 3);
-  EXPECT_NO_THROW(game.apply_action(moves.front()));
-  moves = game.legal_actions();
-  ASSERT_EQ(moves.size(), 1);
+  ASSERT_EQ(moves.size(), 2);
 }
 
 TEST(skat, new_trick) {
@@ -126,20 +123,17 @@ TEST(skat, trick_winner) {
 TEST(skat, trick_1) {
   golv::skat game = create_random_skat_game(7, 1);
   GOLV_LOG_DEBUG("game = " << game);
-  card Ad{kind::ace, suit::diamonds};
-  game.apply_action(Ad);
-  card Kd{kind::king, suit::diamonds};
-  game.apply_action(Kd);
+  game.apply_action("Ad");
+  game.apply_action("Kd");
   auto moves = game.legal_actions();
-  card Td{kind::ten, suit::diamonds};
-  game.apply_action(Td);
+  game.apply_action("Td");
   auto winner = game.tricks().back().leader_;
   ASSERT_EQ(winner, 0);
   auto value = game.value();
   ASSERT_EQ(value, 36);
   ASSERT_TRUE(game.is_max());
   GOLV_LOG_DEBUG("game = " << game.state());
-  game.undo_action(Td);
+  game.undo_action("Td");
   GOLV_LOG_DEBUG("game = " << game.state());
   value = game.value();
   ASSERT_EQ(value, 11);
@@ -147,6 +141,7 @@ TEST(skat, trick_1) {
 
 TEST(skat, legal_1) {
   golv::skat game = default_skat_game_10();
+  auto moves = game.legal_actions();
   GOLV_LOG_DEBUG("game = " << game);
   game.apply_action("Ac");
   auto legal = game.legal_actions();
@@ -162,6 +157,7 @@ TEST(skat, legal_1) {
 
 TEST(skat, legal_jack) {
   golv::skat game = default_skat_game_10(1);
+  auto moves = game.legal_actions();
   GOLV_LOG_DEBUG("game = " << game);
   game.apply_action("Jh");
   auto legal = game.legal_actions();

@@ -132,7 +132,8 @@ struct order {
   }
 };
 
-TEST_F(mws_bridge, skat_8cards_with_mem) {
+TEST_F(mws_bridge, skat_8cards_binary)
+{
   auto game = create_random_skat_game(8, 2);
   GOLV_LOG_DEBUG("game = " << game);
 
@@ -141,7 +142,8 @@ TEST_F(mws_bridge, skat_8cards_with_mem) {
   ASSERT_EQ(value, 32);
 }
 
-TEST_F(mws_bridge, skat_10cards_with_mem) {
+TEST_F(mws_bridge, skat_10cards_binary)
+{
   auto game = default_skat_game_10();
   GOLV_LOG_DEBUG("game = " << game);
 
@@ -157,7 +159,8 @@ TEST_F(mws_bridge, skat_10cards_with_mem) {
   ASSERT_EQ(best_move, "Ac");
 }
 
-TEST_F(mws_bridge, skat_10cards_with_mem_rot1) {
+TEST_F(mws_bridge, skat_10cards_binary_rot1)
+{
   auto game = default_skat_game_10(1);
   GOLV_LOG_DEBUG("game = " << game);
 
@@ -171,7 +174,8 @@ TEST_F(mws_bridge, skat_10cards_with_mem_rot1) {
   ASSERT_EQ(value, 36);
 }
 
-TEST_F(mws_bridge, skat_10cards_with_mem_rot2) {
+TEST_F(mws_bridge, skat_10cards_binary_rot2)
+{
   auto game = default_skat_game_10(2);
   GOLV_LOG_DEBUG("game = " << game);
 

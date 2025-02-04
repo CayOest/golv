@@ -83,7 +83,13 @@ PYBIND11_MODULE(golv_skat, m)
       .def("undo_action", &skat::undo_action)
       .def("is_terminal", &skat::is_terminal)
       .def("state", &skat::state)
-      .def("deal", &skat::deal)
+      .def("deal", py::overload_cast<golv::hand const &>(&golv::skat::deal),
+           "Deal a full 32-card Skat deck")
+      .def("deal",
+           py::overload_cast<golv::hand const &, golv::hand const &,
+                             golv::hand const &, golv::hand const &>(
+               &golv::skat::deal),
+           "Deal specific hands to the players")
       .def("tricks", &skat::tricks)
       .def("__repr__", [](const skat &s) {
         std::ostringstream oss;
