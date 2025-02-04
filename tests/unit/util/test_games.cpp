@@ -1,6 +1,7 @@
 #include "test_games.hpp"
 
 #include <algorithm>
+#include <iostream>
 
 using namespace golv;
 
@@ -65,28 +66,80 @@ bridge default_game_3() {
   return game;
 }
 
+// game results from create_random_skat_game(7)
+golv::skat default_skat_game_7(int rotation, unsigned soloist,
+                               bool skip_pushing)
+{
+  std::vector<std::string> card_strings = {
+      //
+      "8d 9d Ad 8h 7s 9s Tc",  //
+      "Kd 8s Qs 8c Kc Jh Jc",  //
+      "Td 9h Th Ks 7c 9c Ac",  //
+      "As 7h"                  //
+  };
+  std::vector<hand> hands;
+  for (size_t i = 0; i < card_strings.size(); ++i) {
+    hands.push_back(golv::to_hand(card_strings[i]));
+    std::cout << hands[i] << std::endl;
+  }
+  std::rotate(hands.begin(), hands.begin() + rotation,
+              hands.begin() + skat::num_players);
+  skat game;
+  game.deal(hands[0], hands[1], hands[2], hands[3]);
+  game.set_soloist(soloist);
+  if (skip_pushing) {
+    game.skip_pushing();
+  }
+  return game;
+}
+
+// game results from create_random_skat_game(5)
+golv::skat default_skat_game_5(int rotation, unsigned soloist,
+                               bool skip_pushing)
+{
+  std::vector<std::string> card_strings = {
+      //
+      "Th Ks 7c 9c Ac",  //
+      "9d Td 8h 9h 9s",  //
+      "8d Ad 7s Qs Tc",  //
+      "8s Kd"            //
+  };
+  std::vector<hand> hands;
+  for (size_t i = 0; i < card_strings.size(); ++i) {
+    hands.push_back(golv::to_hand(card_strings[i]));
+    std::cout << hands[i] << std::endl;
+  }
+  std::rotate(hands.begin(), hands.begin() + rotation,
+              hands.begin() + skat::num_players);
+  skat game;
+  game.deal(hands[0], hands[1], hands[2], hands[3]);
+  game.set_soloist(soloist);
+  if (skip_pushing) {
+    game.skip_pushing();
+  }
+  return game;
+}
+
 // game results from create_random_skat_game(10)
 golv::skat default_skat_game_10(int rotation, unsigned soloist,
                                 bool skip_pushing)
 {
-  std::array<std::string, 4> card_strings = {
+  std::vector<std::string> card_strings = {
       //
       "9dTd8h9hTh9sKs7c9cAc",  //
       "8dKdAd7s8sQs8cTcJhJc",  //
       "Qd7hQhKhAhAsQcKcJdJs",  //
       "7dTs"                   //
   };
-  std::array<hand, 4> cards;
-  for (size_t i = 0; i < 3; ++i) {
-    for (size_t j = 0; j < 10; ++j) {
-      cards[i].push_back(card(card_strings[i].substr(j * 2, 2).c_str()));
-    }
+  std::vector<hand> hands;
+  for (size_t i = 0; i < card_strings.size(); ++i) {
+    hands.push_back(golv::to_hand(card_strings[i]));
+    std::cout << hands[i] << std::endl;
   }
-  cards[3].push_back(card(card_strings[3].substr(0, 2).c_str()));
-  cards[3].push_back(card(card_strings[3].substr(2, 4).c_str()));
-  std::rotate(cards.begin(), cards.begin() + rotation, cards.begin() + skat::num_players);
+  std::rotate(hands.begin(), hands.begin() + rotation,
+              hands.begin() + skat::num_players);
   skat game;
-  game.deal(cards[0], cards[1], cards[2], cards[3]);
+  game.deal(hands[0], hands[1], hands[2], hands[3]);
   game.set_soloist(soloist);
   if (skip_pushing) {
     game.skip_pushing();

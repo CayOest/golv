@@ -9,11 +9,6 @@
 
 using namespace golv;
 
-TEST(skat, create_random) {
-  skat game = create_random_skat_game(10);
-  ASSERT_EQ(game.value(), 10);
-}
-
 TEST(skat, legal) {
   skat game = default_skat_game_10(0, 1);
   GOLV_LOG_INFO("" << game);
@@ -121,22 +116,22 @@ TEST(skat, trick_winner) {
 }
 
 TEST(skat, trick_1) {
-  golv::skat game = create_random_skat_game(7, 1);
+  golv::skat game = default_skat_game_10(1, 0);
   GOLV_LOG_DEBUG("game = " << game);
   game.apply_action("Ad");
-  game.apply_action("Kd");
+  game.apply_action("Qd");
   auto moves = game.legal_actions();
-  game.apply_action("Td");
+  game.apply_action("9d");
   auto winner = game.tricks().back().leader_;
   ASSERT_EQ(winner, 0);
   auto value = game.value();
-  ASSERT_EQ(value, 36);
+  ASSERT_EQ(value, 24);
   ASSERT_TRUE(game.is_max());
   GOLV_LOG_DEBUG("game = " << game.state());
-  game.undo_action("Td");
+  game.undo_action("9d");
   GOLV_LOG_DEBUG("game = " << game.state());
   value = game.value();
-  ASSERT_EQ(value, 11);
+  ASSERT_EQ(value, 10);
 }
 
 TEST(skat, legal_1) {

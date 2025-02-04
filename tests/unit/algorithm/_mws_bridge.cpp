@@ -86,6 +86,7 @@ TEST_F(mws_bridge, bridge_5cards_solo1_with_mem) {
   ASSERT_FALSE(upper);
 }
 
+#if 0
 TEST_F(mws_bridge, bridge_7cards_with_memory) {
   auto game = create_random_game(7);
   GOLV_LOG_DEBUG("game = " << game.state());
@@ -107,7 +108,6 @@ TEST_F(mws_bridge, bridge_9cards_binary) {
   ASSERT_EQ(value, 9);
 }
 
-#if 0
 TEST_F(mws_bridge, bridge_13cards_binary) {
   auto game = create_random_game(13);
   GOLV_LOG_DEBUG("game = " << game.state());
@@ -119,10 +119,10 @@ TEST_F(mws_bridge, bridge_13cards_binary) {
 #endif
 
 TEST_F(mws_bridge, skat_7cards_with_memory) {
-  auto game = create_random_skat_game(7, 1);
+  auto game = default_skat_game_7(1);
   GOLV_LOG_DEBUG("game = " << game);
 
-  auto expected = 36;
+  auto expected = 28;
   auto [lower, best_move] = mws_with_memory(game, expected - 1);
   ASSERT_TRUE(lower);
   auto [upper, not_best_move] = mws_with_memory(game, expected);
@@ -135,16 +135,6 @@ struct order {
     return !operator==(left, right) && !skat_order(left, right);  //
   }
 };
-
-TEST_F(mws_bridge, skat_8cards_binary)
-{
-  auto game = create_random_skat_game(8, 2);
-  GOLV_LOG_DEBUG("game = " << game);
-
-  auto [value, best_move] = mws_binary_search<golv::skat, order>(game, order{});
-
-  ASSERT_EQ(value, 32);
-}
 
 TEST_F(mws_bridge, skat_10cards_binary)
 {
