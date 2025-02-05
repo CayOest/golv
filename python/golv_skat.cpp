@@ -53,6 +53,8 @@ PYBIND11_MODULE(golv_skat, m)
       .def("get_kind", &card::get_kind)
       .def("get_suit", &card::get_suit)
       .def("code", &card::code)
+      .def("__eq__",
+           [](const card &l, const card &r) { return golv::operator==(l, r); })
       .def("__repr__", [](const card &c) { return golv::to_string(c); });
 
   // Bind the skat_card_order struct

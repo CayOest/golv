@@ -54,6 +54,7 @@ class card {
 std::string to_string(const card& c);
 bool operator==(const card& left, const card& right);
 std::ostream& operator<<(std::ostream& os, const card& c);
+bool operator<(const card& left, const card& right);
 
 /**
  * hand
@@ -74,8 +75,6 @@ hand create_deck() {
 }
 
 hand to_hand(std::string str);
-
-bool operator<(const card& left, const card& right);
 
 hand create_bridge_deck();
 hand create_skat_deck();
