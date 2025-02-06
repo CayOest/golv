@@ -126,12 +126,13 @@ class minimal_window_search {
     }
   }
 
-  constexpr void _update_table_and_abort(value_type bound, value_type value)
+  constexpr void _update_table_before_abort(value_type bound, value_type value)
   {
     return __update_table(bound, value, true);
   }
 
-  constexpr void _update_table_and_continue(value_type bound, value_type value)
+  constexpr void _update_table_after_no_children_left(value_type bound,
+                                                      value_type value)
   {
     return __update_table(bound, value, false);
   }
@@ -150,20 +151,20 @@ class minimal_window_search {
 
     for (auto a : legal_actions) {
       game_.apply_action(a);
-      bool son = _solve(bound, depth + 1);
+      bool result_of_child = _solve(bound, depth + 1);
       game_.undo_action(a);
 
-      if (son == game_.is_max()) {
-        _update_table_and_abort(bound, value);
+      if (result_of_child == game_.is_max()) {
+        _update_table_before_abort(bound, value);
 
         if (depth == 0) {
           best_move_ = a;
         }
-        return son;
+        return result_of_child;
       }
     }
 
-    _update_table_and_continue(bound, value);
+    _update_table_after_no_children_left(bound, value);
 
     return !game_.is_max();
   }
