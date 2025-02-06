@@ -40,6 +40,8 @@ class skat {
   using state_type = card::code_type;
   using cyclic_player_type = cyclic_number<player_type, num_players>;
 
+  constexpr static std::pair<value_type, value_type> value_bounds = {0, 120};
+
   struct trick {
     std::vector<card> cards_;
     player_type leader_;
