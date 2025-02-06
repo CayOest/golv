@@ -196,7 +196,16 @@ auto mws_binary_search(GameT g, LessT o = std::less<typename GameT::move_type>{}
   mws_unordered_table<GameT> table{};
   minimal_window_search mws(g, table, o);
 
-  auto value_bounds = GameT::value_bounds;
+  using game_type = GameT;
+
+  auto value_bounds = std::make_pair(
+      std::numeric_limits<typename game_type::value_type>::lowest(),
+      std::numeric_limits<typename game_type::value_type>::max());
+
+  if constexpr (has_value_bounds<game_type>::value) {
+    value_bounds = GameT::value_bounds;
+  }
+
   typename GameT::value_type start = value_bounds.first,
                              end = value_bounds.second;
   auto mid = (start + end) / 2;
