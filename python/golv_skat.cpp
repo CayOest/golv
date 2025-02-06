@@ -102,4 +102,6 @@ PYBIND11_MODULE(golv_skat, m)
   // Binding für `mws_binary_search` mit `skat`
   m.def("mws_binary_search", &mws_binary_search_skat,
         "Solves a Skat game using MWS binary search");
+
+  m.def("string_to_hand", &to_hand, "Converts a string to a list of cards");
 }

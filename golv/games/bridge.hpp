@@ -33,6 +33,8 @@ class bridge
     using state_type = std::string;
     using cyclic_player_type = cyclic_number<player_type, num_players>;
 
+    constexpr static std::pair<value_type, value_type> value_bounds = {0, 13};
+
     struct trick
     {
         std::vector<card> cards_;
